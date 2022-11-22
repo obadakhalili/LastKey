@@ -1,4 +1,8 @@
-﻿namespace LastKey_Infrastructure.Repositories.User;
+﻿using LastKey_Domain.Entities;
+using LastKey_Domain.Interfaces;
+using LastKey_Infrastructure.Data;
+
+namespace LastKey_Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
@@ -9,7 +13,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<Models.User.User> CreateUserAsync(Models.User.User user)
+    public async Task<User> CreateUserAsync(User user)
     {
         await _context.Users.AddAsync(user);
 

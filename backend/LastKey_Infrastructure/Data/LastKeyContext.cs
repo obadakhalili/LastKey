@@ -1,7 +1,7 @@
-﻿using LastKey_Infrastructure.Models.User;
+﻿using LastKey_Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LastKey_Infrastructure;
+namespace LastKey_Infrastructure.Data;
 
 public class LastKeyContext : DbContext
 {
