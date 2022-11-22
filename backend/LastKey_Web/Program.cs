@@ -1,6 +1,5 @@
-using LastKey_Application.Services.User;
-using LastKey_Infrastructure;
-using LastKey_Infrastructure.Repositories.User;
+using LastKey_Infrastructure.Data;
+using LastKey_Web.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,9 +16,7 @@ builder.Services.AddDbContext<LastKeyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
 });
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddApplicationServices();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
