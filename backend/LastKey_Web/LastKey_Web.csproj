@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\LastKey_Application\LastKey_Application.csproj" />
       <ProjectReference Include="..\LastKey_Domain\LastKey_Domain.csproj" />
+      <ProjectReference Include="..\LastKey_Infrastructure\LastKey_Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
