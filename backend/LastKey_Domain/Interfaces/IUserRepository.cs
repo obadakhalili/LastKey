@@ -1,4 +1,4 @@
-﻿using LastKey_Domain.Models.User;
+﻿using LastKey_Domain.Entities;
 
 namespace LastKey_Domain.Interfaces;
 

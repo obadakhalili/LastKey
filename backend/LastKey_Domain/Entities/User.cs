@@ -1,4 +1,4 @@
-﻿namespace LastKey_Domain.Models.User;
+﻿namespace LastKey_Domain.Entities;
 
 public record User 
 {
