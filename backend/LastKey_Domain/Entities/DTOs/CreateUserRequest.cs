@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace LastKey_Domain.Entities.DTOs;
 
-namespace LastKey_Application.DTOs.User;
-
-public class UserForCreationDto
+public class CreateUserRequest
 {
     public string FullName { get; set; }
     

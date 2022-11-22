@@ -1,6 +1,6 @@
-﻿namespace LastKey_Application.DTOs.User;
+﻿namespace LastKey_Domain.Entities.DTOs;
 
-public class UserDto
+public class User
 {
     public string FullName { get; set; }
 
