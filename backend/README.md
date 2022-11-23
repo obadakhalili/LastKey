@@ -18,6 +18,6 @@ Install dependencies & Run
 ```
 dotnet run
 ```
-Open https://localhost:7188/swagger or http://localhost:5226/swagger to see the endpoints along with their contracts
+Open `https://localhost:7188/swagger` or `http://localhost:5226/swagger` to see the endpoints along with their contracts
 
-The APIs can be directly accessed using on directory `/api/{endpointName}`, such as http://localhost:5226/api/users
+The APIs can be directly accessed on directory `/api/{endpointName}`, such as `http://localhost:5226/api/users`
