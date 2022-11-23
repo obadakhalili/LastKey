@@ -5,11 +5,12 @@ Clone the project
 ```
 git clone https://github.com/obadakhalili/LastKey.git
 ```
-Navigate to the Solution directory
+Navigate to the repository directory
 ```
 cd LastKey
 ```
 Navigate to the project directory
+
 ```
 cd backend
 cd LastKey_Web
