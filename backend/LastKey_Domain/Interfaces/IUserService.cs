@@ -5,4 +5,5 @@ namespace LastKey_Domain.Interfaces;
 public interface IUserService
 {
     Task<User> CreateUserAsync(CreateUserRequest request);
+    Task<User?> AuthenticateUserAsync(LoginUserRequest request);
 }
