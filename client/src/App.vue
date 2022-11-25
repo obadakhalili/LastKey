@@ -1,13 +1,11 @@
 <script setup lang="ts">
-const msg = "LastKey"
+import { RouterView } from "vue-router"
 </script>
 
 <template>
   <v-app>
     <v-main>
-      <h1>
-        {{ msg }}
-      </h1>
+      <router-view />
     </v-main>
   </v-app>
 </template>

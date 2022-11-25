@@ -3,7 +3,7 @@ import "vuetify/styles"
 
 import { createVuetify } from "vuetify"
 
-export default createVuetify({
+const vuetify = createVuetify({
   theme: {
     themes: {
       light: {
@@ -15,3 +15,5 @@ export default createVuetify({
     },
   },
 })
+
+export default vuetify
