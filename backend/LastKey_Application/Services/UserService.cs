@@ -41,12 +41,12 @@ public class UserService : IUserService
 
     public async Task<User?> AuthenticateUserAsync(LoginUserRequest request)
     {
-        var user = await _userRepository.GetUserByUsernameAsync(request.username);
+        var user = await _userRepository.GetUserByUsernameAsync(request.Username);
 
         if (user == default)
             return null;
         
-        var passwordMatched = request.password == user.Password;
+        var passwordMatched = request.Password == user.Password;
 
         if (!passwordMatched)
             return null;
@@ -65,16 +65,8 @@ public class UserService : IUserService
 
     private string GenerateUserToken(LastKey_Domain.Entities.User user)
     {
-        var claims = new List<Claim>
-        {
-            new("UserId", user.UserId.ToString()),
-            new("Full Name", user.FullName),
-            new(ClaimTypes.Role, user.IsAdmin ? "Admin" : "Member")
-        };
-
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims),
             Issuer = _configuration["Jwt:Issuer"],
             Audience = _configuration["Jwt:Audience"],
             Expires = DateTime.UtcNow.AddYears(1),
