@@ -22,4 +22,15 @@ public class UsersController : ControllerBase
 
         return Ok(createdUser);
     }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<User>> LoginUser([FromBody] LoginUserRequest request)
+    {
+        var user = await _userService.AuthenticateUserAsync(request);
+
+        if (user == default)
+            return Unauthorized();
+
+        return Ok(user);
+    }
 }
