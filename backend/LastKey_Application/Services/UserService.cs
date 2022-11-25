@@ -55,7 +55,7 @@ public class UserService : IUserService
         
         _httpContext.HttpContext!.Response.Cookies.Append("jwtToken", jwtToken, new CookieOptions
         {
-            Expires = DateTime.UtcNow.AddDays(1),
+            Expires = DateTime.UtcNow.AddYears(1),
             Secure = true,
             HttpOnly = true
         });
@@ -67,17 +67,17 @@ public class UserService : IUserService
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new(ClaimTypes.Name, user.UserName),
+            new("UserId", user.UserId.ToString()),
+            new("Full Name", user.FullName),
             new(ClaimTypes.Role, user.IsAdmin ? "Admin" : "Member")
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(1),
             Issuer = _configuration["Jwt:Issuer"],
             Audience = _configuration["Jwt:Audience"],
+            Expires = DateTime.UtcNow.AddYears(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes(_configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256)
         };
