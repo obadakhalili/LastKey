@@ -1,5 +1,6 @@
 ﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LastKey_Web.Controllers;
@@ -34,6 +35,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize]
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<User>> GetUserInfo(int userId)
     {
