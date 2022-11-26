@@ -98,9 +98,9 @@ public class UserService : IUserService
 
         var jwtTokenHeader = jwtToken[0];
 
-        var jwtTokenSignature = jwtToken[1];
+        var jwtTokenSignature = jwtToken[2];
 
-        var jwtTokenPayload = jwtToken[2];
+        var jwtTokenPayload = jwtToken[1];
 
         return (jwtTokenHeader, jwtTokenSignature, jwtTokenPayload);
     }
