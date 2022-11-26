@@ -67,7 +67,7 @@ public class UserService : IUserService
         return await _userRepository.UsernameExistsAsync(username);
     }
 
-    public async Task<User?> AuthenticateUserAsync(LoginUserRequest request)
+    public async Task<AuthenticationResponse?> AuthenticateUserAsync(LoginUserRequest request)
     {
         var user = await _userRepository.GetUserByUsernameAsync(request.Username);
 
@@ -81,25 +81,13 @@ public class UserService : IUserService
 
         var jwtToken = GenerateUserToken(user);
 
-        _httpContext.HttpContext!.Response.Cookies.Append("jwtHeader", jwtToken.Item1, new CookieOptions
+        return new AuthenticationResponse
         {
-            Secure = true,
-            HttpOnly = true
-        });
-        
-        _httpContext.HttpContext!.Response.Cookies.Append("jwtSignature", jwtToken.Item2, new CookieOptions
-        {
-            Secure = true,
-            HttpOnly = true
-        });
-        
-        _httpContext.HttpContext!.Response.Cookies.Append("jwtPayload", jwtToken.Item3, new CookieOptions
-        {
-            Secure = true,
-            HttpOnly = false
-        });
-        
-        return _mapper.Map<User>(user);
+            User = _mapper.Map<User>(user),
+            JwtHeader = jwtToken.Item1,
+            JwtPayload = jwtToken.Item3,
+            JwtSignature = jwtToken.Item2
+        };
     }
 
     private (string, string, string) GenerateUserToken(LastKey_Domain.Entities.User user)

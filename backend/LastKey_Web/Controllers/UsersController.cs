@@ -1,4 +1,5 @@
-﻿using LastKey_Domain.Entities.DTOs;
+﻿using System.Net;
+using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,12 +35,30 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<User>> LoginUser([FromBody] LoginUserRequest request)
     {
-        var user = await _userService.AuthenticateUserAsync(request);
+        var authenticationResponse = await _userService.AuthenticateUserAsync(request);
 
-        if (user == default)
+        if (authenticationResponse == default)
             return Unauthorized();
 
-        return Ok(user);
+        HttpContext.Response.Cookies.Append("jwtHeader", authenticationResponse.JwtHeader!, new CookieOptions
+        {
+            Secure = true,
+            HttpOnly = true
+        });
+        
+        HttpContext.Response.Cookies.Append("jwtSignature", authenticationResponse.JwtSignature!, new CookieOptions
+        {
+            Secure = true,
+            HttpOnly = true
+        });
+        
+        HttpContext.Response.Cookies.Append("jwtPayload", authenticationResponse.JwtPayload!, new CookieOptions
+        {
+            Secure = true,
+            HttpOnly = false
+        });
+
+        return Ok(authenticationResponse.User);
     }
 
     [Authorize]
