@@ -38,6 +38,15 @@ public class UsersController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("logout")]
+    public ActionResult LogoutUser()
+    {
+        _userService.ClearCookies();
+
+        return Ok();
+    }
+    
+    [Authorize]
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<User>> GetUserInfo(int userId)
     {

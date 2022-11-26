@@ -111,5 +111,17 @@ public class UserService : IUserService
 
         return _mapper.Map<User>(user);
     }
+
+    public void ClearCookies()
+    {
+        var cookies = _httpContext.HttpContext!.Request.Cookies;
+        var cookiesToClear = _httpContext.HttpContext!.Response.Cookies;
+
+        if (!cookies.ContainsKey("jwtHeader")) return;
+        
+        cookiesToClear.Delete("jwtHeader");
+        cookiesToClear.Delete("jwtSignature");
+        cookiesToClear.Delete("jwtPayload");
+    }
     
 }

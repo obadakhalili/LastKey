@@ -8,4 +8,6 @@ public interface IUserService
     Task<User?> AuthenticateUserAsync(LoginUserRequest request);
 
     Task<User?> RetrieveUserInfoByIdAsync(int userId);
+
+    void ClearCookies();
 }
