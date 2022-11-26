@@ -104,5 +104,12 @@ public class UserService : IUserService
 
         return (jwtTokenHeader, jwtTokenSignature, jwtTokenPayload);
     }
+
+    public async Task<User?> RetrieveUserInfoByIdAsync(int userId)
+    {
+        var user = await _userRepository.GetUserInfoByIdAsync(userId);
+
+        return _mapper.Map<User>(user);
+    }
     
 }

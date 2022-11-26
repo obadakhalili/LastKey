@@ -6,4 +6,6 @@ public interface IUserService
 {
     Task<User> CreateUserAsync(CreateUserRequest request);
     Task<User?> AuthenticateUserAsync(LoginUserRequest request);
+
+    Task<User?> RetrieveUserInfoByIdAsync(int userId);
 }

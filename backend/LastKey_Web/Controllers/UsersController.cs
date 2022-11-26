@@ -33,4 +33,15 @@ public class UsersController : ControllerBase
 
         return Ok(user);
     }
+
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<User>> GetUserInfo(int userId)
+    {
+        var userInfo = await _userService.RetrieveUserInfoByIdAsync(userId);
+
+        if (userInfo == null)
+            return NotFound();
+
+        return Ok(userInfo);
+    }
 }
