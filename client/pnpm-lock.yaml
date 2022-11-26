@@ -6,6 +6,7 @@ specifiers:
   '@types/node': ^18.11.9
   '@vitejs/plugin-vue': ^3.2.0
   autoprefixer: ^10.4.13
+  jwt-decode: ^3.1.2
   postcss: ^8.4.19
   prettier: ^2.8.0
   tailwindcss: ^3.2.4
@@ -20,6 +21,7 @@ specifiers:
 dependencies:
   '@mdi/font': 7.0.96
   '@tanstack/vue-query': 4.17.0_vue@3.2.45
+  jwt-decode: 3.1.2
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
   vuetify: 3.0.2_yubpz2ngiak2jx4t36ir5uzr3q
@@ -735,6 +737,10 @@ packages:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
     dev: true
+
+  /jwt-decode/3.1.2:
+    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
+    dev: false
 
   /lilconfig/2.0.6:
     resolution: {integrity: sha512-9JROoBW7pobfsx+Sq2JsASvCo6Pfo6WWoUW79HuB1BCoBXD4PLWJPqDF6fNj67pqBYTbAHkE57M1kS/+L1neOg==}
