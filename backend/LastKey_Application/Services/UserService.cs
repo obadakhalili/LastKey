@@ -52,18 +52,29 @@ public class UserService : IUserService
             return null;
 
         var jwtToken = GenerateUserToken(user);
-        
-        _httpContext.HttpContext!.Response.Cookies.Append("jwtToken", jwtToken, new CookieOptions
+
+        _httpContext.HttpContext!.Response.Cookies.Append("jwtHeader", jwtToken.Item1, new CookieOptions
         {
-            Expires = DateTime.UtcNow.AddYears(1),
             Secure = true,
             HttpOnly = true
+        });
+        
+        _httpContext.HttpContext!.Response.Cookies.Append("jwtSignature", jwtToken.Item2, new CookieOptions
+        {
+            Secure = true,
+            HttpOnly = true
+        });
+        
+        _httpContext.HttpContext!.Response.Cookies.Append("jwtPayload", jwtToken.Item3, new CookieOptions
+        {
+            Secure = true,
+            HttpOnly = false
         });
         
         return _mapper.Map<User>(user);
     }
 
-    private string GenerateUserToken(LastKey_Domain.Entities.User user)
+    private (string, string, string) GenerateUserToken(LastKey_Domain.Entities.User user)
     {
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -78,9 +89,15 @@ public class UserService : IUserService
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        var jwtToken = tokenHandler.WriteToken(token);
+        var jwtToken = tokenHandler.WriteToken(token).Split(".");
 
-        return jwtToken;
+        var jwtTokenHeader = jwtToken[0];
+
+        var jwtTokenSignature = jwtToken[1];
+
+        var jwtTokenPayload = jwtToken[2];
+
+        return (jwtTokenHeader, jwtTokenSignature, jwtTokenPayload);
     }
     
 }
