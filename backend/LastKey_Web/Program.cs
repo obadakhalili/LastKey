@@ -4,7 +4,6 @@ using LastKey_Web.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AuthenticationMiddleware = LastKey_Web.Helpers.AuthenticationMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +32,21 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(jbo =>
 {
+    jbo.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("jwtHeader"))
+            {
+                var header = context.Request.Cookies["jwtHeader"];
+                var payload = context.Request.Cookies["jwtPayload"];
+                var signature = context.Request.Cookies["jwtSignature"];
+                context.Token = $"{header}.{payload}.{signature}";
+            }
+
+            return Task.CompletedTask;
+        }
+    };
     jbo.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
@@ -56,8 +70,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseMiddleware<AuthenticationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
