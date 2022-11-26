@@ -4,6 +4,7 @@ using LastKey_Web.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AuthenticationMiddleware = LastKey_Web.Helpers.AuthenticationMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<AuthenticationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

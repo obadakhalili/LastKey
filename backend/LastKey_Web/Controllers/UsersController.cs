@@ -23,7 +23,9 @@ public class UsersController : ControllerBase
 
         return Ok(createdUser);
     }
+    
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<User>> LoginUser([FromBody] LoginUserRequest request)
     {
