@@ -18,7 +18,7 @@ public class UsersController : ControllerBase
     
     public async Task<ActionResult<User>> CreateUser(CreateUserRequest request)
     {
-        if (await _userService.UsernameExistsAsync(request.UserName))
+        if (await _userService.UsernameExistsAsync(request.Username))
         {
             return BadRequest("Username Already Exists!");
         }
