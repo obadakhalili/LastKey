@@ -1,6 +1,7 @@
 ﻿using LastKey_Domain.Entities;
 using LastKey_Domain.Interfaces;
 using LastKey_Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LastKey_Infrastructure.Repositories;
 
@@ -20,5 +21,10 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
 
         return user;
+    }
+
+    public async Task<bool> UsernameExistsAsync(string username)
+    {
+        return await _context.Users.AnyAsync(u => u.UserName == username);
     }
 }

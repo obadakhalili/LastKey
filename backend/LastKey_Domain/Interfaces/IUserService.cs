@@ -5,4 +5,6 @@ namespace LastKey_Domain.Interfaces;
 public interface IUserService
 {
     Task<User> CreateUserAsync(CreateUserRequest request);
+    
+    Task<bool> UsernameExistsAsync(string username);
 }
