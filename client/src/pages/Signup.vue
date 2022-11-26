@@ -1,21 +1,27 @@
 <script setup lang="ts">
-import { useMutation } from "@tanstack/vue-query"
 import { reactive, ref } from "vue"
+import { useMutation } from "@tanstack/vue-query"
 
 import fetcher from "@/utils/api"
 import fieldValidators from "@/utils/field-validators"
+import { useAuth } from "@/utils/composables"
+import Link from "@/components/Link.vue"
 
-interface SignupFormInfo {
+interface SignupRequest {
   fullName: string
-  userImage: Array<File> | undefined
-  userName: string
+  userImage: File
+  username: string
   password: string
+}
+
+type SignupFormInfo = Omit<SignupRequest, "userImage"> & {
+  userImage: Array<File> | undefined
 }
 
 const signupFormInfo = reactive<SignupFormInfo>({
   fullName: "",
   userImage: undefined,
-  userName: "",
+  username: "",
   password: "",
 })
 
@@ -25,23 +31,42 @@ const {
   mutateAsync: registerUser,
   isLoading: isAddingUser,
   isSuccess: isUserAdded,
-  isError: addingUserFailed,
+  isError: isLoginError,
 } = useMutation({
-  mutationFn: (signupInfo: SignupFormInfo) => {
-    const formData = new FormData()
-    formData.append("fullName", signupInfo.fullName)
-    const [userImage] = signupInfo.userImage!
-    formData.append("userImage", userImage, userImage.name)
-    formData.append("userName", signupInfo.userName)
-    formData.append("password", signupInfo.password)
+  mutationFn: (signupInfo: SignupRequest) => {
+    // const formData = new FormData()
+    // formData.append("fullName", signupInfo.fullName)
+    // const [userImage] = signupInfo.userImage!
+    // formData.append("userImage", userImage, userImage.name)
+    // formData.append("userName", signupInfo.userName)
+    // formData.append("password", signupInfo.password)
 
-    return fetcher.post<SignupFormInfo>("/users", signupInfo)
+    // TODO: backend should return descriptive message when username is taken
+    return fetcher.post("/users", {
+      ...signupInfo,
+      userImage: "img",
+    })
   },
 })
 
+const { login, isLoggingIn } = useAuth()
+
 function handleRegisterFormSubmit() {
   if (sginFormInfoIsValid.value) {
-    registerUser(signupFormInfo)
+    registerUser(
+      {
+        ...signupFormInfo,
+        userImage: signupFormInfo.userImage![0],
+      },
+      {
+        onSuccess: () => {
+          login({
+            username: signupFormInfo.username,
+            password: signupFormInfo.password,
+          })
+        },
+      },
+    )
   }
 }
 </script>
@@ -52,19 +77,17 @@ function handleRegisterFormSubmit() {
     class="max-w-[700px] p-5 mx-auto space-y-3"
     @submit.prevent="handleRegisterFormSubmit"
   >
-    <h1 class="text-h4 text-center">Register an Account</h1>
+    <h1 class="text-h4 text-center">Register an account</h1>
     <p
-      class="text-text-subtitle-1"
+      class="text-subtitle-1"
       :class="{
-        'opacity-0': !(addingUserFailed || isUserAdded),
-        'opacity-100': addingUserFailed || isUserAdded,
-        'text-red-500': addingUserFailed,
+        'opacity-0': !(isLoginError || isUserAdded),
+        'opacity-100': isLoginError || isUserAdded,
+        'text-red-500': isLoginError,
         'text-green-500': isUserAdded,
       }"
     >
-      {{
-        addingUserFailed ? "Something went wrong" : "User added successfully"
-      }}
+      {{ isLoginError ? "Something went wrong" : "User added successfully" }}
     </p>
     <v-text-field
       label="Fullname"
@@ -75,12 +98,13 @@ function handleRegisterFormSubmit() {
       clearable
       label="Verification image"
       accept="image/*"
+      prepend-icon="mdi-camera"
       v-model="signupFormInfo.userImage"
       :rules="[fieldValidators.fileRequired]"
     ></v-file-input>
     <v-text-field
       label="Username"
-      v-model="signupFormInfo.userName"
+      v-model="signupFormInfo.username"
       :rules="[fieldValidators.textRequired]"
     ></v-text-field>
     <v-text-field
@@ -89,12 +113,26 @@ function handleRegisterFormSubmit() {
       v-model="signupFormInfo.password"
       :rules="[fieldValidators.textRequired]"
     ></v-text-field>
-    <v-btn
-      type="submit"
-      :disabled="isAddingUser"
-      :prepend-icon="isAddingUser ? '' : 'mdi-account-plus'"
-    >
-      Sign Up
-    </v-btn>
+    <div class="flex justify-between">
+      <Link link="/login" text="Login" />
+      <v-btn
+        type="submit"
+        :disabled="isAddingUser || isLoggingIn"
+        :prepend-icon="
+          isAddingUser || isLoggingIn
+            ? 'mdi-loading mdi-spin'
+            : 'mdi-account-plus'
+        "
+        :color="isLoggingIn ? 'success' : ''"
+      >
+        {{
+          isLoggingIn
+            ? "Logging in..."
+            : isAddingUser
+            ? "Registering..."
+            : "Register"
+        }}
+      </v-btn>
+    </div>
   </v-form>
 </template>

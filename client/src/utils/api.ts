@@ -12,7 +12,9 @@ function callApi(method: "GET" | "POST" | "PUT" | "DELETE") {
       throw new Error(response.statusText)
     }
 
-    return (await response.json()) as ResponseBody
+    try {
+      return (await response.json()) as ResponseBody
+    } catch {}
   }
 }
 
