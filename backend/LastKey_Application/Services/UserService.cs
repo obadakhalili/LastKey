@@ -76,8 +76,13 @@ public class UserService : IUserService
 
     private (string, string, string) GenerateUserToken(LastKey_Domain.Entities.User user)
     {
+        var claims = new List<Claim>
+        {
+            new Claim("userId", user.UserId.ToString())
+        };
         var tokenDescriptor = new SecurityTokenDescriptor
         {
+            Subject = new ClaimsIdentity(claims),
             Issuer = _configuration["Jwt:Issuer"],
             Audience = _configuration["Jwt:Audience"],
             Expires = DateTime.UtcNow.AddYears(1),
