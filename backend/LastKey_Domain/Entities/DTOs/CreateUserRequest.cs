@@ -1,10 +1,12 @@
-﻿namespace LastKey_Domain.Entities.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace LastKey_Domain.Entities.DTOs;
 
 public class CreateUserRequest
 {
     public string FullName { get; set; }
     
-    public string UserImage { get; set; }
+    public IFormFile UserImage { get; set; }
     
     public string Username { get; set; }
 

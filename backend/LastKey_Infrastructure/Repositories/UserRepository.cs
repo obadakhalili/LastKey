@@ -22,7 +22,7 @@ public class UserRepository : IUserRepository
 
         return user;
     }
-
+    
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
@@ -31,5 +31,10 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserInfoByIdAsync(int userId)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+    }
+
+    public async Task<bool> UsernameExistsAsync(string username)
+    {
+        return await _context.Users.AnyAsync(u => u.UserName == username);
     }
 }

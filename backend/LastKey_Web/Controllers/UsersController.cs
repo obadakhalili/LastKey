@@ -10,15 +10,19 @@ namespace LastKey_Web.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
-
+    
     public UsersController(IUserService userService)
     {
         _userService = userService;
     }
     
-    [HttpPost]
-    public async Task<ActionResult<User>> CreateUser([FromBody] CreateUserRequest request)
+    public async Task<ActionResult<User>> CreateUser(CreateUserRequest request)
     {
+        if (await _userService.UsernameExistsAsync(request.UserName))
+        {
+            return BadRequest("Username Already Exists!");
+        }
+        
         var createdUser = await _userService.CreateUserAsync(request);
 
         return Ok(createdUser);
