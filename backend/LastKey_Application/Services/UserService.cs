@@ -74,7 +74,7 @@ public class UserService : IUserService
         if (user == default)
             return null;
         
-        var passwordMatched = request.Password == user.Password;
+        var passwordMatched = GenerateEncryptedPassword(request.Password) == user.Password;
 
         if (!passwordMatched)
             return null;
