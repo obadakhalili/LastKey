@@ -1,22 +1,31 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
+  "name": "lastkey-client",
+  "version": "0.0.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "format": "pnpm prettier --write .",
+    "dev": "vite --host",
+    "watch-types": "vue-tsc --noEmit --watch",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@types/node": "18.11.9",
-    "@types/react": "18.0.25",
-    "@types/react-dom": "18.0.9",
-    "eslint": "8.28.0",
-    "eslint-config-next": "13.0.4",
-    "next": "13.0.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "typescript": "4.9.3"
+    "@mdi/font": "7.0.96",
+    "@tanstack/vue-query": "^4.17.0",
+    "axios": "^1.2.0",
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "prettier": "^2.8.0",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.9.3",
+    "vite": "^3.2.4",
+    "vite-plugin-vuetify": "^1.0.0",
+    "vue-tsc": "^1.0.9"
   }
 }
