@@ -6,26 +6,36 @@ import { useAuth } from "./utils/composables"
 
 const router = useRouter()
 const route = useRoute()
-const isPrivateRoute = computed(() => route.meta.private as boolean | undefined)
+const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
 const { user, verifyTokenPayloadCookie } = useAuth()
 
-watch(
-  [user, isPrivateRoute],
-  ([user, isPrivateRoute]) => {
-    if (isPrivateRoute === undefined) {
-      return
-    }
+watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
+  if (routeIsPrivate === undefined) {
+    return
+  }
 
-    if (user && !isPrivateRoute) {
-      router.replace({ name: "Home" })
-    } else if (user === null && isPrivateRoute) {
-      router.replace({ name: "Login" })
-    }
-  },
-  { immediate: true },
-)
+  if (user && !routeIsPrivate) {
+    router.push({ name: "Home" })
+  } else if (!user && routeIsPrivate) {
+    router.push({ name: "Login" })
+  }
+})
 
-// TODO: add route guards
+router.beforeEach((to, from, next) => {
+  if (to.meta.private === undefined) {
+    return next()
+  }
+
+  if (to.meta.private && user.value === null) {
+    return next({ name: "Login", replace: true })
+  }
+
+  if (!to.meta.private && user.value !== null) {
+    return next({ name: "Home", replace: true })
+  }
+
+  next()
+})
 
 onMounted(() => {
   verifyTokenPayloadCookie()
@@ -35,7 +45,6 @@ onMounted(() => {
 <template>
   <v-app>
     <v-main>
-      <!-- TODO: fix screen flickering between private and unprivate pages -->
       <router-view />
     </v-main>
   </v-app>

@@ -28,12 +28,7 @@ function handleLoginFormSubmit() {
     @submit.prevent="handleLoginFormSubmit"
   >
     <h1 class="text-h4 text-center">Login to your Account</h1>
-    <v-alert
-      v-if="isLoginError"
-      color="error"
-      icon="mdi-alert-circle"
-      closable
-    >
+    <v-alert v-if="isLoginError" color="error" icon="mdi-alert-circle" closable>
       {{
         loginAttemptUnauthorized
           ? "Username or password is incorrect"
