@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useMutation } from "@tanstack/vue-query"
 import { reactive, ref } from "vue"
+import axios from "axios"
 
-import fetcher from "@/utils/api"
 import fieldValidators from "@/utils/field-validators"
 
 interface SignupFormInfo {
@@ -35,7 +35,7 @@ const {
     formData.append("userName", signupInfo.userName)
     formData.append("password", signupInfo.password)
 
-    return fetcher.post<SignupFormInfo>("/users", signupInfo)
+    return axios.post("/api/users", formData)
   },
 })
 

@@ -1,11 +1,11 @@
 function callApi(method: "GET" | "POST" | "PUT" | "DELETE") {
-  return async <ResponseBody = unknown>(route: string, data?: unknown) => {
+  return async <ResponseBody = unknown>(
+    route: string,
+    data?: FormData | Record<string, unknown>,
+  ) => {
     const response = await fetch(`/api/${route}`, {
       method,
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      body: data instanceof FormData ? data : JSON.stringify(data),
     })
 
     if (!response.ok) {
