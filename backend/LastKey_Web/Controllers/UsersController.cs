@@ -15,6 +15,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
     
+    [HttpPost]
     public async Task<ActionResult<User>> CreateUser(CreateUserRequest request)
     {
         if (await _userService.UsernameExistsAsync(request.UserName))
