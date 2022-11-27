@@ -1,9 +1,9 @@
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
-
-import fetcher from "./api"
-import { findCookie } from "./helpers"
+import axios from "axios"
 import jwtDecode from "jwt-decode"
+
+import { findCookie } from "./helpers"
 
 export interface LoginRequest {
   username: string
@@ -28,7 +28,10 @@ function createAuth() {
     } = useMutation({
       mutationKey: ["login"],
       mutationFn: (loginInfo: LoginRequest) => {
-        return fetcher.post<UserInfoResponse>("/users/login", loginInfo)
+        return axios.post<unknown, UserInfoResponse>(
+          "/api/users/login",
+          loginInfo,
+        )
       },
       onSuccess: (data) => {
         user.value = data
@@ -38,7 +41,7 @@ function createAuth() {
     const { mutateAsync: logout } = useMutation({
       mutationKey: ["logout"],
       mutationFn: () => {
-        return fetcher.post("/users/logout")
+        return axios.post("/api/users/logout")
       },
       onSuccess: () => {
         user.value = null
@@ -52,8 +55,8 @@ function createAuth() {
         const decodedPayload = jwtDecode<{ userId: number | undefined }>(
           jwtToken,
         )
-        const userInfo = await fetcher.get<UserInfoResponse>(
-          `/users/user/${decodedPayload.userId}`,
+        const userInfo = await axios.get<unknown, UserInfoResponse>(
+          `/api/users/user/${decodedPayload.userId}`,
         )
 
         user.value = userInfo

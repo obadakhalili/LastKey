@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
+import axios from "axios"
 
-import fetcher from "@/utils/api"
 import fieldValidators from "@/utils/field-validators"
 import { useAuth } from "@/utils/composables"
 import Link from "@/components/Link.vue"
@@ -34,18 +34,13 @@ const {
   isError: isLoginError,
 } = useMutation({
   mutationFn: (signupInfo: SignupRequest) => {
-    // const formData = new FormData()
-    // formData.append("fullName", signupInfo.fullName)
-    // const [userImage] = signupInfo.userImage!
-    // formData.append("userImage", userImage, userImage.name)
-    // formData.append("userName", signupInfo.userName)
-    // formData.append("password", signupInfo.password)
+    const formData = new FormData()
+    formData.append("fullName", signupInfo.fullName)
+    formData.append("userImage", signupInfo.userImage, signupInfo.userImage.name)
+    formData.append("userName", signupInfo.username)
+    formData.append("password", signupInfo.password)
 
-    // TODO: backend should return descriptive message when username is taken
-    return fetcher.post("/users", {
-      ...signupInfo,
-      userImage: "img",
-    })
+    return axios.post("/api/users", formData)
   },
 })
 
