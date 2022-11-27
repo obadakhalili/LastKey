@@ -22,7 +22,9 @@ public class UsersController : ControllerBase
     {
         if (await _userService.UsernameExistsAsync(request.Username))
         {
-            return BadRequest("Username Already Exists!");
+            return BadRequest(new {
+                message = "Username already exists"
+            });
         }
         
         var createdUser = await _userService.CreateUserAsync(request);

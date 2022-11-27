@@ -12,7 +12,7 @@ const loginFormInfo = reactive<LoginRequest>({
 
 const loginFormInfoIsValid = ref(false)
 
-const { login, isLoggingIn, isLoginError } = useAuth()
+const { login, loginAttemptUnauthorized, isLoggingIn, isLoginError } = useAuth()
 
 function handleLoginFormSubmit() {
   if (loginFormInfoIsValid.value) {
@@ -28,12 +28,18 @@ function handleLoginFormSubmit() {
     @submit.prevent="handleLoginFormSubmit"
   >
     <h1 class="text-h4 text-center">Login to your Account</h1>
-    <p
-      class="text-subtitle-1 text-red-500"
-      :class="isLoginError ? 'opacity-100' : 'opacity-0'"
+    <v-alert
+      v-if="isLoginError"
+      color="error"
+      icon="mdi-alert-circle"
+      closable
     >
-      Something went wrong
-    </p>
+      {{
+        loginAttemptUnauthorized
+          ? "Username or password is incorrect"
+          : "An error occurred while logging in"
+      }}
+    </v-alert>
     <v-text-field
       label="Username"
       v-model="loginFormInfo.username"

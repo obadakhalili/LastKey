@@ -25,6 +25,8 @@ watch(
   { immediate: true },
 )
 
+// TODO: add route guards
+
 onMounted(() => {
   verifyTokenPayloadCookie()
 })

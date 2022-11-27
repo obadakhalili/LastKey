@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue"
+import { computed, reactive, ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 
 import fieldValidators from "@/utils/field-validators"
 import { useAuth } from "@/utils/composables"
@@ -30,19 +30,27 @@ const sginFormInfoIsValid = ref(false)
 const {
   mutateAsync: registerUser,
   isLoading: isAddingUser,
-  isSuccess: isUserAdded,
-  isError: isLoginError,
-} = useMutation({
-  mutationFn: (signupInfo: SignupRequest) => {
+  isError: isSignupError,
+  failureReason,
+} = useMutation<unknown, AxiosError<{ message: string }>, SignupRequest>({
+  mutationFn: (signupInfo) => {
     const formData = new FormData()
     formData.append("fullName", signupInfo.fullName)
-    formData.append("userImage", signupInfo.userImage, signupInfo.userImage.name)
+    formData.append(
+      "userImage",
+      signupInfo.userImage,
+      signupInfo.userImage.name,
+    )
     formData.append("userName", signupInfo.username)
     formData.append("password", signupInfo.password)
 
     return axios.post("/api/users", formData)
   },
 })
+
+const signupFailureReason = computed(
+  () => failureReason.value?.response?.data.message,
+)
 
 const { login, isLoggingIn } = useAuth()
 
@@ -73,17 +81,18 @@ function handleRegisterFormSubmit() {
     @submit.prevent="handleRegisterFormSubmit"
   >
     <h1 class="text-h4 text-center">Register an account</h1>
-    <p
-      class="text-subtitle-1"
-      :class="{
-        'opacity-0': !(isLoginError || isUserAdded),
-        'opacity-100': isLoginError || isUserAdded,
-        'text-red-500': isLoginError,
-        'text-green-500': isUserAdded,
-      }"
+    <v-alert
+      v-if="isSignupError"
+      color="error"
+      icon="mdi-alert-circle"
+      closable
     >
-      {{ isLoginError ? "Something went wrong" : "User added successfully" }}
-    </p>
+      {{
+        signupFailureReason
+          ? signupFailureReason
+          : "An error occurred while registering"
+      }}
+    </v-alert>
     <v-text-field
       label="Fullname"
       v-model="signupFormInfo.fullName"

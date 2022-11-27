@@ -1,6 +1,6 @@
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import jwtDecode from "jwt-decode"
 
 import { findCookie } from "./helpers"
@@ -24,18 +24,20 @@ function createAuth() {
     const {
       mutateAsync: login,
       isLoading: isLoggingIn,
+      failureReason,
       isError: isLoginError,
-    } = useMutation({
+    } = useMutation<UserInfoResponse, AxiosError, LoginRequest>({
       mutationKey: ["login"],
-      mutationFn: (loginInfo: LoginRequest) => {
-        return axios.post<unknown, UserInfoResponse>(
-          "/api/users/login",
-          loginInfo,
-        )
+      mutationFn: (loginInfo) => {
+        return axios.post("/api/users/login", loginInfo)
       },
       onSuccess: (data) => {
         user.value = data
       },
+    })
+
+    const loginAttemptUnauthorized = computed(() => {
+      return failureReason.value?.response?.status === 401
     })
 
     const { mutateAsync: logout } = useMutation({
@@ -68,8 +70,9 @@ function createAuth() {
     return {
       user,
       login,
-      isLoggingIn,
+      loginAttemptUnauthorized,
       isLoginError,
+      isLoggingIn,
       logout,
       verifyTokenPayloadCookie,
     }
