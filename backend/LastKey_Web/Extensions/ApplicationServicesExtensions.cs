@@ -11,6 +11,10 @@ public static class ApplicationServicesExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         
         services.AddScoped<IUserService, UserService>();
+
+        services.AddScoped<ILockRepository, LockRepository>();
+
+        services.AddScoped<INetworkService, NetworkService>();
         
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
