@@ -38,4 +38,15 @@ public class LockController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("users/{userId}")]
+    public async Task<ActionResult<List<Lock>>> RetrieveLocksForUser(int userId)
+    {
+        var userLocks = await _lockService.RetrieveUserLocksAsync(userId);
+
+        if (userLocks == null)
+            return Ok();
+
+        return Ok(userLocks);
+    }
 }

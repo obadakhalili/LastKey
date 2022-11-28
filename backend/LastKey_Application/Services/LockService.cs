@@ -38,4 +38,11 @@ public class LockService : ILockService
     {
         return _lockRepository.DeleteLockForUserAsync(request.UserId, request.LockId);
     }
+
+    public async Task<List<Lock>?> RetrieveUserLocksAsync(int userId)
+    {
+        var userLocks = await _lockRepository.RetrieveLocksForUserAsync(userId);
+
+        return _mapper.Map<List<Lock>>(userLocks);
+    }
 }

@@ -11,4 +11,6 @@ public interface ILockRepository
     Task<bool> LockNameExistsForUserAsync(string lockName, int userId);
 
     Task<bool> DeleteLockForUserAsync(int userId, int lockId);
+
+    Task<List<Lock>?> RetrieveLocksForUserAsync(int userId);
 }
