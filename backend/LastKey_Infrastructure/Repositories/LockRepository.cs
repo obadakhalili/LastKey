@@ -45,7 +45,7 @@ public class LockRepository : ILockRepository
         return user.Locks.Remove(@lock);
     }
 
-    public async Task<List<Lock>?> RetrieveLocksForUserAsync(int userId)
+    public async Task<List<Lock>> RetrieveLocksForUserAsync(int userId)
     {
         var user = await _context.Users.Include(u => u.Locks)
             .FirstAsync(u => u.UserId == userId);

@@ -39,7 +39,7 @@ public class LockService : ILockService
         return _lockRepository.DeleteLockForUserAsync(request.AdminId, request.LockId);
     }
 
-    public async Task<List<Lock>?> RetrieveUserLocksAsync(int userId)
+    public async Task<List<Lock>> RetrieveUserLocksAsync(int userId)
     {
         var userLocks = await _lockRepository.RetrieveLocksForUserAsync(userId);
 

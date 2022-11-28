@@ -2,5 +2,5 @@
 
 public interface INetworkService
 {
-    Task<List<string>?> RetrieveUnregisteredLocksAsync();
+    Task<List<string>> RetrieveUnregisteredLocksAsync();
 }

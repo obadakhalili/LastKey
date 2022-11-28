@@ -44,9 +44,6 @@ public class LockController : ControllerBase
     {
         var userLocks = await _lockService.RetrieveUserLocksAsync(userId);
 
-        if (userLocks == null)
-            return Ok();
-
         return Ok(userLocks);
     }
 

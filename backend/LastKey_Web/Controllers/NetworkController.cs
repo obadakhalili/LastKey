@@ -21,9 +21,6 @@ public class NetworkController : ControllerBase
     {
         var unregisteredLocks = await _networkService.RetrieveUnregisteredLocksAsync();
 
-        if (unregisteredLocks == null)
-            return Ok();
-
         return Ok(unregisteredLocks);
     }
 }

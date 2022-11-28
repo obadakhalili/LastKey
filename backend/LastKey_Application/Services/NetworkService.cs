@@ -13,7 +13,7 @@ public class NetworkService : INetworkService
         _lockRepository = lockRepository;
     }
     
-    public async Task<List<string>?> RetrieveUnregisteredLocksAsync()
+    public async Task<List<string>> RetrieveUnregisteredLocksAsync()
     {
         var registeredLocks = (await _lockRepository.RetrieveLocksAsync()).Select(l => l.MacAddress)
             .ToList();

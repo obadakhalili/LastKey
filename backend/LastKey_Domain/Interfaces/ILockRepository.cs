@@ -13,7 +13,7 @@ public interface ILockRepository
 
     Task<bool> DeleteLockForUserAsync(int userId, int lockId);
 
-    Task<List<Lock>?> RetrieveLocksForUserAsync(int userId);
+    Task<List<Lock>> RetrieveLocksForUserAsync(int userId);
 
     Task<Lock> UpdateLockNameAsync(UpdateLockRequest request);
 }
