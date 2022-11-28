@@ -16,7 +16,7 @@ public class MappingProfile : Profile
         
         CreateMap<LockPairRequest, Lock>()
             .ForMember((d) => d.LockName,
-                op => op.MapFrom(s => s.AdminId))
+                op => op.MapFrom(s => s.LockName))
             .ForMember(d => d.MacAddress,
                 op => op.MapFrom(s => s.LockMacAddress))
             .ForMember(d => d.UserId,
