@@ -21,4 +21,6 @@ public record User
 
     [Column("is_admin")]
     public bool IsAdmin { get; set; }
+
+    public List<Lock> Locks { get; set; }
 }
