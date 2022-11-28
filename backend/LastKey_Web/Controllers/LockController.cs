@@ -49,4 +49,20 @@ public class LockController : ControllerBase
 
         return Ok(userLocks);
     }
+
+    [HttpPost("updateLock")]
+    public async Task<ActionResult<Lock>> UpdateLockName([FromBody] UpdateLockRequest request)
+    {
+        var response = new Lock();
+
+        if (string.IsNullOrWhiteSpace(request.NewName))
+            return BadRequest("Please specify the lock's name");
+
+        var updatedLock = await _lockService.UpdateLockNameAsync(request);
+
+        if (updatedLock == null)
+            return BadRequest("The name chosen already exists for user!");
+
+        return updatedLock;
+    }
 }
