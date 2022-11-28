@@ -2,7 +2,7 @@
 
 namespace LastKey_Domain.Entities;
 
-public class Lock
+public record Lock
 {
     [Column("id")]
     public int LockId { get; set; }
