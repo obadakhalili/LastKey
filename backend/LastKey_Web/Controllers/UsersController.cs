@@ -44,19 +44,16 @@ public class UsersController : ControllerBase
 
         HttpContext.Response.Cookies.Append("jwtHeader", authenticationResponse.JwtHeader!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = true
         });
         
         HttpContext.Response.Cookies.Append("jwtSignature", authenticationResponse.JwtSignature!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = true
         });
         
         HttpContext.Response.Cookies.Append("jwtPayload", authenticationResponse.JwtPayload!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = false
         });
 

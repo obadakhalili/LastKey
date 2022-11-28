@@ -64,6 +64,10 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCookiePolicy(new CookiePolicyOptions
+    {
+        Secure = CookieSecurePolicy.None
+    });
     app.UseSwagger();
     app.UseSwaggerUI();
 }
