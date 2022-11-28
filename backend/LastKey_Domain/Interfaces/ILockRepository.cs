@@ -5,4 +5,10 @@ namespace LastKey_Domain.Interfaces;
 public interface ILockRepository
 {
     Task<List<Lock>> RetrieveLocksAsync();
+
+    Task AddLockAsync(Lock @lock);
+
+    Task<bool> LockNameExistsForUserAsync(string lockName, int userId);
+
+    Task<bool> DeleteLockForUserAsync(int userId, int lockId);
 }
