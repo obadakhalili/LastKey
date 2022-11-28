@@ -1,13 +1,19 @@
-﻿namespace LastKey_Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace LastKey_Domain.Entities;
 
 public class Lock
 {
+    [Column("id")]
     public int LockId { get; set; }
 
+    [Column("name")]
     public string LockName { get; set; }
 
+    [Column("mac_address")]
     public string MacAddress { get; set; }
-
-    public int? AdminId { get; set; }
+    
+    [Column("admin_id")] 
+    public int UserId { get; set; }
     public User User { get; set; }
 }

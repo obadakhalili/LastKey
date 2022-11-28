@@ -19,7 +19,7 @@ public class LastKeyContext : DbContext
             .HasIndex(u => u.UserName).IsUnique();
         
         modelBuilder.Entity<Lock>()
-            .HasIndex(l => new { l.AdminId, l.LockName }).IsUnique();
+            .HasIndex(l => new { l.UserId, l.LockName }).IsUnique();
         
         base.OnModelCreating(modelBuilder);
     }
