@@ -9,4 +9,6 @@ public interface ILockService
     Task<bool> UnpairLockAsync(LockUnpairRequest request);
 
     Task<List<Lock>?> RetrieveUserLocksAsync(int userId);
+
+    Task<Lock?> UpdateLockNameAsync(UpdateLockRequest request);
 }

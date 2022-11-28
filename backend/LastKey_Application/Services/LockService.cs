@@ -29,14 +29,14 @@ public class LockService : ILockService
             IsLocked = true
         };
 
-        await _lockRepository.AddLockAsync(lockToCreate);
+        await _lockRepository.AddLockAsync(request.AdminId ,lockToCreate);
 
         return _mapper.Map<Lock>(lockToCreate);
     }
 
     public Task<bool> UnpairLockAsync(LockUnpairRequest request)
     {
-        return _lockRepository.DeleteLockForUserAsync(request.UserId, request.LockId);
+        return _lockRepository.DeleteLockForUserAsync(request.AdminId, request.LockId);
     }
 
     public async Task<List<Lock>?> RetrieveUserLocksAsync(int userId)
@@ -44,5 +44,15 @@ public class LockService : ILockService
         var userLocks = await _lockRepository.RetrieveLocksForUserAsync(userId);
 
         return _mapper.Map<List<Lock>>(userLocks);
+    }
+
+    public async Task<Lock?> UpdateLockNameAsync(UpdateLockRequest request)
+    {
+        if (await _lockRepository.LockNameExistsForUserAsync(request.NewName, request.AdminId))
+            return null;
+
+        var updatedLock = await _lockRepository.UpdateLockNameAsync(request);
+
+        return _mapper.Map<Lock>(updatedLock);
     }
 }
