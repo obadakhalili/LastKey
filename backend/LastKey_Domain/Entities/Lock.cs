@@ -12,6 +12,9 @@ public class Lock
 
     [Column("mac_address")]
     public string MacAddress { get; set; }
+
+    [Column("is_locked")]
+    public bool IsLocked { get; set; }
     
     [Column("admin_id")] 
     public int UserId { get; set; }
