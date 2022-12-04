@@ -77,7 +77,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors();
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
