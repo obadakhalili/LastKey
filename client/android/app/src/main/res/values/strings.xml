@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LastKey</string>
+    <string name="title_activity_main">LastKey</string>
+    <string name="package_name">lastkey.netlify.app</string>
+    <string name="custom_url_scheme">lastkey.netlify.app</string>
+</resources>
