@@ -14,8 +14,6 @@ public static class ApplicationServicesExtensions
 
         services.AddScoped<ILockRepository, LockRepository>();
 
-        services.AddScoped<INetworkService, NetworkService>();
-
         services.AddScoped<ILockService, LockService>();
         
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
