@@ -42,7 +42,11 @@ public class LockRepository : ILockRepository
         
         var @lock = await _context.Locks.FirstAsync(l => l.LockId == lockId);
 
-        return user.Locks.Remove(@lock);
+        var result = user.Locks.Remove(@lock);
+
+        await _context.SaveChangesAsync();
+
+        return result;
     }
 
     public async Task<List<Lock>> RetrieveLocksForUserAsync(int userId)
