@@ -55,4 +55,9 @@ public class LockService : ILockService
 
         return _mapper.Map<Lock>(updatedLock);
     }
+
+    public async Task<bool> LockExistsAsync(string macAddress)
+    {
+        return await _lockRepository.LockMacAddressExistsAsync(macAddress);
+    }
 }

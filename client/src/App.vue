@@ -10,7 +10,7 @@ const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
 const { user, verifyTokenPayloadCookie } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
-  if (routeIsPrivate === undefined) {
+  if (user === undefined) {
     return
   }
 
@@ -22,7 +22,7 @@ watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.private === undefined) {
+  if (user.value === undefined) {
     return next()
   }
 
@@ -44,8 +44,29 @@ onMounted(() => {
 
 <template>
   <v-app>
+    <v-navigation-drawer expand-on-hover rail v-if="user">
+      <v-list>
+        <v-list-item
+          :title="user.fullName"
+          :subtitle="user.username"
+        ></v-list-item>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-home" title="Home" to="/" />
+        <v-list-item
+          prepend-icon="mdi-lock"
+          title="Locks Management"
+          to="/locks-management"
+        />
+      </v-list>
+      <!-- TODO: add logout -->
+    </v-navigation-drawer>
     <v-main>
-      <router-view />
+      <!-- TODO: add loading -->
+      <div class="p-2">
+        <router-view v-if="user !== undefined" />
+      </div>
     </v-main>
   </v-app>
 </template>

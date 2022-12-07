@@ -1,4 +1,4 @@
-package lastkey.netlify.app;
+package net.azurewebsites.lastkey;
 
 import com.getcapacitor.BridgeActivity;
 

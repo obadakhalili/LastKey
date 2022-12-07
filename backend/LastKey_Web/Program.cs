@@ -64,7 +64,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    Secure = CookieSecurePolicy.None
+    Secure = CookieSecurePolicy.SameAsRequest
 });
 
 app.UseSwagger();
