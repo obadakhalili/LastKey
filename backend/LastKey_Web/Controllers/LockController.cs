@@ -37,13 +37,18 @@ public class LockController : ControllerBase
         return createdLock;
     }
 
-    [HttpDelete("unpair")]
-    public async Task<ActionResult> UnpairLock(LockUnpairRequest request)
+    [HttpDelete("{lockId}")]
+    public async Task<ActionResult> UnpairLock([FromRoute] int lockId)
     {
-        var isDeleted = await _lockService.UnpairLockAsync(request);
+        var token = GetToken(Request);
+        var userId = GetUserIdFromToken(token);
+
+        var isDeleted = await _lockService.UnpairLockAsync(lockId, userId);
 
         if (isDeleted == false)
-            return BadRequest("The specified lock for that user was not found!");
+        {
+            return BadRequest();
+        }
 
         return NoContent();
     }

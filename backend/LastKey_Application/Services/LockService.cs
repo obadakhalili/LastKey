@@ -34,9 +34,9 @@ public class LockService : ILockService
         return _mapper.Map<Lock>(lockToCreate);
     }
 
-    public Task<bool> UnpairLockAsync(LockUnpairRequest request)
+    public Task<bool> UnpairLockAsync(int lockId, int adminId)
     {
-        return _lockRepository.DeleteLockForUserAsync(request.AdminId, request.LockId);
+        return _lockRepository.DeleteLockForUserAsync(adminId, lockId);
     }
 
     public async Task<List<Lock>> RetrieveUserLocksAsync(int userId)

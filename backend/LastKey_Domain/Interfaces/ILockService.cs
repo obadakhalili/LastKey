@@ -6,7 +6,7 @@ public interface ILockService
 {
     Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId);
 
-    Task<bool> UnpairLockAsync(LockUnpairRequest request);
+    Task<bool> UnpairLockAsync(int lockId, int adminId);
 
     Task<List<Lock>> RetrieveUserLocksAsync(int userId);
 
