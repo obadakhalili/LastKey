@@ -15,9 +15,9 @@ public class LockService : ILockService
         _mapper = mapper;
     }
 
-    public async Task<Lock?> RegisterLockAsync(LockPairRequest request)
+    public async Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId)
     {
-        if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, request.AdminId))
+        if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, adminId))
         {
             return null;
         }
@@ -29,7 +29,7 @@ public class LockService : ILockService
             IsLocked = true
         };
 
-        await _lockRepository.AddLockAsync(request.AdminId ,lockToCreate);
+        await _lockRepository.AddLockAsync(adminId, lockToCreate);
 
         return _mapper.Map<Lock>(lockToCreate);
     }

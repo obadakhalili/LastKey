@@ -4,7 +4,7 @@ namespace LastKey_Domain.Interfaces;
 
 public interface ILockService
 {
-    Task<Lock?> RegisterLockAsync(LockPairRequest request);
+    Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId);
 
     Task<bool> UnpairLockAsync(LockUnpairRequest request);
 

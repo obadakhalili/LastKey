@@ -21,13 +21,18 @@ public class LockController : ControllerBase
         _lockService = lockService;
     }
 
-    [HttpPost("pair")]
-    public async Task<ActionResult<Lock>> PairLockToUser(LockPairRequest request)
+    [HttpPost()]
+    public async Task<ActionResult<Lock>> PairLockToUser([FromBody] LockPairRequest request)
     {
-        var createdLock = await _lockService.RegisterLockAsync(request);
+        var token = GetToken(Request);
+        var userId = GetUserIdFromToken(token);
+
+        var createdLock = await _lockService.RegisterLockAsync(request, userId);
 
         if (createdLock == null)
-            return BadRequest($"A lock with the name {request.LockName} already exists!");
+            return BadRequest(new {
+                message = $"A lock with the name {request.LockName} already exists!"
+            });
 
         return createdLock;
     }
@@ -63,7 +68,6 @@ public class LockController : ControllerBase
         }
 
         var token = GetToken(Request);
-        
         var userId = GetUserIdFromToken(token);
 
         var updatedLock = await _lockService.UpdateLockNameAsync(lockId, name, userId);

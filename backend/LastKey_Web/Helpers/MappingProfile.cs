@@ -13,13 +13,11 @@ public class MappingProfile : Profile
         CreateMap<LastKey_Domain.Entities.User, User>();
 
         CreateMap<Lock, LastKey_Domain.Entities.DTOs.Lock>();
-        
+
         CreateMap<LockPairRequest, Lock>()
             .ForMember((d) => d.LockName,
                 op => op.MapFrom(s => s.LockName))
             .ForMember(d => d.MacAddress,
-                op => op.MapFrom(s => s.LockMacAddress))
-            .ForMember(d => d.UserId,
-                op => op.MapFrom(s => s.AdminId));
+                op => op.MapFrom(s => s.LockMacAddress));
     }
 }
