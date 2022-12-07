@@ -17,7 +17,7 @@ public class LockService : ILockService
 
     public async Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId)
     {
-        if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, adminId))
+        if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, adminId, null))
         {
             return null;
         }
@@ -48,7 +48,7 @@ public class LockService : ILockService
 
     public async Task<Lock?> UpdateLockNameAsync(int lockId, string name, int userId)
     {
-        if (await _lockRepository.LockNameExistsForUserAsync(name, userId))
+        if (await _lockRepository.LockNameExistsForUserAsync(name, userId, lockId))
             return null;
 
         var updatedLock = await _lockRepository.UpdateLockNameAsync(lockId, name);

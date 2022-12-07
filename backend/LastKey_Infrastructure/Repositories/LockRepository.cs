@@ -29,11 +29,11 @@ public class LockRepository : ILockRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> LockNameExistsForUserAsync(string lockName, int userId)
+    public async Task<bool> LockNameExistsForUserAsync(string lockName, int userId, int? lockId)
     {
         var user = await _context.Users.Include(u => u.Locks).FirstAsync(u => u.UserId == userId);
         
-        return user.Locks.Any(l => l.LockName == lockName);
+        return user.Locks.Any(l => l.LockId != lockId && l.LockName == lockName);
     }
 
     public async Task<bool> DeleteLockForUserAsync(int userId, int lockId)

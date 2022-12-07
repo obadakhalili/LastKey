@@ -31,7 +31,7 @@ public class LockController : ControllerBase
 
         if (createdLock == null)
             return BadRequest(new {
-                message = $"A lock with the name {request.LockName} already exists!"
+                message = $"A lock with the name \"{request.LockName}\" already exists!"
             });
 
         return createdLock;
@@ -61,28 +61,28 @@ public class LockController : ControllerBase
         return Ok(userLocks);
     }
 
-    [HttpPost("{lockId}")]
-    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, [FromBody] string name)
+    [HttpPatch("{lockId}")]
+    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, [FromBody] UpdateLockRequest request)
     {
-        var response = new Lock();
-
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
-            response.Message = "Please specify the lock's name";
-            return BadRequest(response);
+            return BadRequest();
         }
 
         var token = GetToken(Request);
         var userId = GetUserIdFromToken(token);
 
-        var updatedLock = await _lockService.UpdateLockNameAsync(lockId, name, userId);
+        var updatedLock = await _lockService.UpdateLockNameAsync(lockId, request.Name, userId);
 
         if (updatedLock == null)
         {
-            response.Message = "The name chosen already exists for user!";
-            return BadRequest(response);
+            return BadRequest(new
+            {
+                message = "The name chosen already in use"
+            });
         }
-        return updatedLock;
+
+        return Ok();
     }
 
     private int GetUserIdFromToken(string token)

@@ -9,7 +9,7 @@ public interface ILockRepository
 
     Task AddLockAsync(int userId, Lock @lock);
 
-    Task<bool> LockNameExistsForUserAsync(string lockName, int userId);
+    Task<bool> LockNameExistsForUserAsync(string lockName, int userId, int? lockId);
 
     Task<bool> DeleteLockForUserAsync(int userId, int lockId);
 

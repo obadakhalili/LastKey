@@ -7,6 +7,4 @@ public class Lock
     public string LockName { get; set; }
 
     public string MacAddress { get; set; }
-
-    public string Message { get; set; } = string.Empty;
 }
