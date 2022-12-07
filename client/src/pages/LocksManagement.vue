@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { computed, ref } from "vue"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import axios from "axios"
 
 import { useAuth } from "@/utils/composables"
+import fieldValidators from "@/utils/field-validators"
 
 interface Lock {
   lockId: number
@@ -31,6 +33,19 @@ const { mutateAsync: unpairLock, isLoading: isUnpairingALock } = useMutation(
     )
   },
 )
+
+const { mutateAsync: updateLockName, isLoading: isUpadingALockName } =
+  useMutation((lockId: number) => {
+    return axios.post(`/api/locks/updateLock`, {
+      lockId,
+      adminId: user.value!.userId,
+      newName: newLockName.value,
+    })
+  })
+
+const lockToEdit = ref<number | null>(null)
+const newLockName = ref("")
+const isEditingALock = computed(() => lockToEdit.value !== null)
 </script>
 
 <template>
@@ -51,7 +66,7 @@ const { mutateAsync: unpairLock, isLoading: isUnpairingALock } = useMutation(
             </v-btn>
           </v-list-item-action>
           <v-list-item-action>
-            <v-btn icon size="small">
+            <v-btn icon size="small" @click="lockToEdit = lock.lockId">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -61,4 +76,28 @@ const { mutateAsync: unpairLock, isLoading: isUnpairingALock } = useMutation(
       </v-list-item>
     </v-list>
   </v-card-text>
+  <v-dialog :persistent="true" v-model="isEditingALock" max-width="290">
+    <v-form
+      @submit.prevent="updateLockName(lockToEdit!).then(() => refetchMyLocks())"
+      validate-on="submit"
+    >
+      <v-card>
+        <v-card-text>
+          <v-text-field
+            label="New lock name"
+            v-model="newLockName"
+            :rules="[fieldValidators.textRequired]"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click=";(newLockName = ''), (lockToEdit = null)">
+            Close
+          </v-btn>
+          <v-btn type="submit" color="primary" :loading="isUpadingALockName">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-form>
+  </v-dialog>
 </template>
