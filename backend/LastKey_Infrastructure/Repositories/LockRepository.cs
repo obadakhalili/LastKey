@@ -75,4 +75,11 @@ public class LockRepository : ILockRepository
     {
         return await _context.Locks.AnyAsync(l => l.MacAddress == macAddress);
     }
+
+    public async Task<bool> GetLockStateAsync(string macAddress)
+    {
+        return ((await _context.Locks.FirstOrDefaultAsync(l => l.MacAddress == macAddress))!)
+            .IsLocked;
+
+    }
 }

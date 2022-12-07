@@ -60,4 +60,9 @@ public class LockService : ILockService
     {
         return await _lockRepository.LockMacAddressExistsAsync(macAddress);
     }
+
+    public async Task<bool> RetrieveLockStateAsync(string macAddress)
+    {
+        return await _lockRepository.GetLockStateAsync(macAddress);
+    }
 }

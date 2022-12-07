@@ -13,4 +13,6 @@ public interface ILockService
     Task<Lock?> UpdateLockNameAsync(UpdateLockRequest request);
 
     Task<bool> LockExistsAsync(string macAddress);
+
+    Task<bool> RetrieveLockStateAsync(string macAddress);
 }

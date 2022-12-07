@@ -1,19 +1,12 @@
 #include <WiFiManager.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <Arduino_JSON.h>
 
-String httpGetRequest(const char* serverName) {
-  WiFiClient client;
+String httpGetRequest(String url) {
   HTTPClient http;
     
-  // Your Domain name with URL path or IP address with path
-  http.begin(client, serverName);
-  
-  // If you need Node-RED/server authentication, insert user and password below
-  //http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
-  
-  // Send HTTP POST request
+  http.begin(url);
+
   int httpResponseCode = http.GET();
   
   String payload = "{}"; 
@@ -26,43 +19,69 @@ String httpGetRequest(const char* serverName) {
   else {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
-    payload = http.getString();
   }
-  // Free resources
+
   http.end();
 
   return payload;
 }
+
+WiFiManager wm;
 
 
 void setup() {
     WiFi.mode(WIFI_STA);
 
     Serial.begin(9600);
-    
-    WiFiManager wm;
 
+    // just for testing purposes
+    wm.resetSettings();
 
-    //wm.resetSettings();
-
-    bool res = wm.autoConnect("AutoConnectAP");
+    bool res = wm.autoConnect("LockAP");
 
     if (res){
-      //RequestOptions request;
-      //request.method = "GET";
-      String url = "https://lastkey.azurewebsites.net/api/locks/" + WiFi.macAddress();
+      String url = "http://lastkey.azurewebsites.net/api/locks/" + WiFi.macAddress();
 
-      char* api = (char*) url.c_str();
+      String lockRegistered = httpGetRequest(url);
+      
+      if (lockRegistered == "false"){
+        wm.resetSettings();
 
-      Serial.println(api);
+        res = wm.autoConnect("LockAP");
+      }
+    }
 
-      String lockRegistered = httpGetRequest(api);
-      JSONVar obj = JSON.parse(lockRegistered);
-      Serial.println(obj);
+    else{
+      wm.resetSettings();
+      setup();
     }
 
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:   
+  String url = "http://lastkey.azurewebsites.net/api/locks/" + WiFi.macAddress();
+
+  String lockRegistered = httpGetRequest(url);
+
+  if (lockRegistered == "false"){
+    wm.resetSettings();	
+    setup();
+  }
+
+  else{
+    url = "http://lastkey.azurewebsites.net/api/locks/state/" + WiFi.macAddress();
+
+    String isLocked = httpGetRequest(url);
+
+    // this if statement will also check if the lock is already locked or not when I implement the actual relay
+    if (isLocked == "true"){
+      Serial.println("Locking");
+    }
+   // //again, the same check would be here as above
+    if (isLocked == "false"){
+      Serial.println("Unlocking");
+    }
+  }
+
+  delay(5000);
 }

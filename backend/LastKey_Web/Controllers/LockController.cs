@@ -69,4 +69,11 @@ public class LockController : ControllerBase
     {
         return Ok(await _lockService.LockExistsAsync(macAddress));
     }
+
+    [AllowAnonymous]
+    [HttpGet("state/{macAddress}")]
+    public async Task<ActionResult<bool>> GetLockState(string macAddress)
+    {
+        return Ok(await _lockService.RetrieveLockStateAsync(macAddress));
+    }
 }
