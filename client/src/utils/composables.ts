@@ -1,6 +1,6 @@
 import { computed, ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
-import axios, { AxiosError } from "axios"
+import axios, { AxiosError, AxiosResponse } from "axios"
 import jwtDecode from "jwt-decode"
 
 import { findCookie } from "./helpers"
@@ -57,11 +57,12 @@ function createAuth() {
         const decodedPayload = jwtDecode<{ userId: number | undefined }>(
           jwtToken,
         )
-        const userInfo = await axios.get<unknown, UserInfoResponse>(
-          `/api/users/user/${decodedPayload.userId}`,
-        )
+        const response = await axios.get<
+          unknown,
+          AxiosResponse<UserInfoResponse>
+        >(`/api/users/user/${decodedPayload.userId}`)
 
-        user.value = userInfo
+        user.value = response.data
       } catch {
         user.value = null
       }
