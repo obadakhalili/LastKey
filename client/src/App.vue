@@ -10,7 +10,7 @@ const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
 const { user, verifyTokenPayloadCookie } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
-  if (user === undefined) {
+  if (user === undefined || routeIsPrivate === undefined) {
     return
   }
 
