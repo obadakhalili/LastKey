@@ -51,21 +51,27 @@ const accessPoints = ref<
   | undefined
 >()
 
+// NOTE: why chaining didn't work here?
 WifiWizard2.requestPermission()
-  .then(WifiWizard2.scan)
-  .then((aps) => {
-    accessPoints.value = aps
+  .then(() => {
+    WifiWizard2.scan()
+      .then((aps) => {
+        accessPoints.value = aps
+      })
+      .catch(() => {
+        accessPoints.value = null
+      })
   })
   .catch(() => {
     accessPoints.value = null
   })
 
 const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
-  (macAddress: string) => {
+  (lock: { name: string; macAddress: string }) => {
     return axios.post("/api/locks", {
-      lockMacAddress: macAddress,
+      lockMacAddress: lock.macAddress,
       // NOTE: this is unreliable as the name could already be taken
-      lockName: `Lock ${myLocks.value!.length + 1}`,
+      lockName: lock.name,
     })
   },
 )
@@ -172,7 +178,10 @@ const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
                   icon
                   size="small"
                   @click="
-                    pairToALock(accessPoint.SSID).then(() => {
+                    pairToALock({
+                      name: accessPoint.SSID,
+                      macAddress: accessPoint.BSSID,
+                    }).then(() => {
                       isPairingANewLockDialogOpen = false
                       refetchMyLocks()
                     })
@@ -180,7 +189,7 @@ const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
                   :disabled="
                     isPairingToALock ||
                     myLocks?.some(
-                      (lock) => lock.macAddress === accessPoint.SSID,
+                      (lock) => lock.macAddress === accessPoint.BSSID,
                     )
                   "
                 >
