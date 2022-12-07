@@ -16,4 +16,6 @@ public interface ILockRepository
     Task<List<Lock>> RetrieveLocksForUserAsync(int userId);
 
     Task<Lock> UpdateLockNameAsync(UpdateLockRequest request);
+
+    Task<bool> LockMacAddressExistsAsync(string macAddress);
 }
