@@ -1,7 +1,11 @@
-﻿using LastKey_Domain.Entities.DTOs;
+﻿using System.IdentityModel.Tokens.Jwt;
+using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 
 namespace LastKey_Web.Controllers;
 
@@ -47,20 +51,49 @@ public class LockController : ControllerBase
         return Ok(userLocks);
     }
 
-    [HttpPost("updateLock")]
-    public async Task<ActionResult<Lock>> UpdateLockName([FromBody] UpdateLockRequest request)
+    [HttpPost("{lockId}")]
+    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, [FromBody] string name)
     {
         var response = new Lock();
 
-        if (string.IsNullOrWhiteSpace(request.NewName))
-            return BadRequest("Please specify the lock's name");
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            response.Message = "Please specify the lock's name";
+            return BadRequest(response);
+        }
 
-        var updatedLock = await _lockService.UpdateLockNameAsync(request);
+        var token = GetToken(Request);
+        
+        var userId = GetUserIdFromToken(token);
+
+        var updatedLock = await _lockService.UpdateLockNameAsync(lockId, name, userId);
 
         if (updatedLock == null)
-            return BadRequest("The name chosen already exists for user!");
-
+        {
+            response.Message = "The name chosen already exists for user!";
+            return BadRequest(response);
+        }
         return updatedLock;
+    }
+
+    private int GetUserIdFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+
+        var jsonToken = handler.ReadJwtToken(token);
+        var userId = jsonToken.Claims.First(claim => claim.Type == "userId")
+            .Value;
+
+        return Int32.Parse(userId);
+    }
+
+    private string GetToken(HttpRequest request)
+    {
+        request.Cookies.TryGetValue("jwtHeader", out var jwtHeader);
+        request.Cookies.TryGetValue("jwtPayload", out var jwtPayload);
+        request.Cookies.TryGetValue("jwtSignature", out var jwtSignature);
+
+        return $"{jwtHeader}.{jwtPayload}.{jwtSignature}";
     }
 
     [AllowAnonymous]

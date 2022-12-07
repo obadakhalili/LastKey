@@ -46,12 +46,12 @@ public class LockService : ILockService
         return _mapper.Map<List<Lock>>(userLocks);
     }
 
-    public async Task<Lock?> UpdateLockNameAsync(UpdateLockRequest request)
+    public async Task<Lock?> UpdateLockNameAsync(int lockId, string name, int userId)
     {
-        if (await _lockRepository.LockNameExistsForUserAsync(request.NewName, request.AdminId))
+        if (await _lockRepository.LockNameExistsForUserAsync(name, userId))
             return null;
 
-        var updatedLock = await _lockRepository.UpdateLockNameAsync(request);
+        var updatedLock = await _lockRepository.UpdateLockNameAsync(lockId, name);
 
         return _mapper.Map<Lock>(updatedLock);
     }

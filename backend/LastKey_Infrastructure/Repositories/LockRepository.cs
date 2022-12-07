@@ -57,14 +57,11 @@ public class LockRepository : ILockRepository
         return user.Locks;
     }
 
-    public async Task<Lock> UpdateLockNameAsync(UpdateLockRequest request)
+    public async Task<Lock> UpdateLockNameAsync(int lockId, string name)
     {
-        var user = await _context.Users.Include(u => u.Locks)
-            .FirstAsync(u => u.UserId == request.AdminId);
+        var @lock = await _context.Locks.FirstAsync(l => l.LockId == lockId);
 
-        var @lock = user.Locks.First(l => l.LockId == request.LockId);
-
-        @lock.LockName = request.NewName;
+        @lock.LockName = name;
 
         await _context.SaveChangesAsync();
 
