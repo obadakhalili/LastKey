@@ -4,7 +4,6 @@ specifiers:
   '@capacitor/android': ^4.6.0
   '@capacitor/cli': ^4.6.0
   '@capacitor/core': ^4.6.0
-  '@capacitor/ios': ^4.6.0
   '@ionic-native/core': 5.1.0
   '@ionic-native/wifi-wizard-2': ^5.36.0
   '@mdi/font': 7.0.96
@@ -15,7 +14,6 @@ specifiers:
   axios: ^1.2.0
   cordova-plugin-wifiwizard2: ^3.1.1
   es6-promise-plugin: ^4.2.2
-  jwt-decode: ^3.1.2
   postcss: ^8.4.19
   prettier: ^2.8.0
   rxjs: 6.5.0
@@ -31,7 +29,6 @@ specifiers:
 dependencies:
   '@capacitor/android': 4.6.0_@capacitor+core@4.6.0
   '@capacitor/core': 4.6.0
-  '@capacitor/ios': 4.6.0_@capacitor+core@4.6.0
   '@ionic-native/core': 5.1.0_rxjs@6.5.0
   '@ionic-native/wifi-wizard-2': 5.36.0_3wrgepaq6radu3j5qwhvydptpe
   '@mdi/font': 7.0.96
@@ -39,7 +36,6 @@ dependencies:
   axios: 1.2.0
   cordova-plugin-wifiwizard2: 3.1.1
   es6-promise-plugin: 4.2.2
-  jwt-decode: 3.1.2
   rxjs: 6.5.0
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
@@ -121,14 +117,6 @@ packages:
     resolution: {integrity: sha512-P8PfJB5rFSBU2wDZ5wVHTVFZxKweFrxz554+Fl/ymhhAxlxFJuF5nFIZyQgVq+A1yp/nCLzWOyPMC5OPD/um0g==}
     dependencies:
       tslib: 2.4.1
-    dev: false
-
-  /@capacitor/ios/4.6.0_@capacitor+core@4.6.0:
-    resolution: {integrity: sha512-OrB1pYWDZJ0O0lAlqVM5DgVWxx2/As9vXBY72ndQhI+HYY41fIYFt5YHxp5rubqzV38UKmP2ZgdK7Q33ZmjDyw==}
-    peerDependencies:
-      '@capacitor/core': ^4.5.0
-    dependencies:
-      '@capacitor/core': 4.6.0
     dev: false
 
   /@esbuild/android-arm/0.15.15:
@@ -1181,10 +1169,6 @@ packages:
     optionalDependencies:
       graceful-fs: 4.2.10
     dev: true
-
-  /jwt-decode/3.1.2:
-    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
-    dev: false
 
   /kleur/3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}

@@ -13,7 +13,6 @@
   "dependencies": {
     "@capacitor/android": "^4.6.0",
     "@capacitor/core": "^4.6.0",
-    "@capacitor/ios": "^4.6.0",
     "@ionic-native/core": "5.1.0",
     "@ionic-native/wifi-wizard-2": "^5.36.0",
     "@mdi/font": "7.0.96",
@@ -21,7 +20,6 @@
     "axios": "^1.2.0",
     "cordova-plugin-wifiwizard2": "^3.1.1",
     "es6-promise-plugin": "^4.2.2",
-    "jwt-decode": "^3.1.2",
     "rxjs": "6.5.0",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue"
+import { computed, watch } from "vue"
 import { RouterView, useRoute, useRouter } from "vue-router"
 
 import { useAuth } from "./utils/composables"
@@ -7,7 +7,7 @@ import { useAuth } from "./utils/composables"
 const router = useRouter()
 const route = useRoute()
 const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
-const { user, verifyTokenPayloadCookie } = useAuth()
+const { user } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
   if (user === undefined || routeIsPrivate === undefined) {
@@ -36,17 +36,12 @@ router.beforeEach((to, from, next) => {
 
   next()
 })
-
-onMounted(() => {
-  verifyTokenPayloadCookie()
-})
 </script>
 
 <template>
   <v-app>
     <v-navigation-drawer expand-on-hover rail v-if="user">
       <v-list>
-      <!-- TODO: fix info not showing on login -->
         <v-list-item
           :title="user.fullName"
           :subtitle="user.username"
@@ -64,7 +59,12 @@ onMounted(() => {
       <!-- TODO: add logout -->
     </v-navigation-drawer>
     <v-main>
-      <v-row v-if="user === undefined" justify="center" align="center" class="h-screen">
+      <v-row
+        v-if="user === undefined"
+        justify="center"
+        align="center"
+        class="h-screen"
+      >
         <v-progress-circular
           color="primary"
           indeterminate
