@@ -17,15 +17,6 @@ export interface UserInfoResponse {
 function createAuth() {
   const user = ref<UserInfoResponse | null | undefined>()
 
-  axios
-    .get("/api/users/me")
-    .then((response: AxiosResponse<UserInfoResponse>) => {
-      user.value = response.data
-    })
-    .catch(() => {
-      user.value = null
-    })
-
   return function useAuth() {
     const {
       mutateAsync: login,
@@ -56,6 +47,18 @@ function createAuth() {
       },
     })
 
+    // NOTE: This should be executed on invocation of ceateAuth(), but for some reason it won't work on mobile
+    function setupUser() {
+      axios
+        .get("/api/users/me")
+        .then((response: AxiosResponse<UserInfoResponse>) => {
+          user.value = response.data
+        })
+        .catch(() => {
+          user.value = null
+        })
+    }
+
     return {
       user,
       login,
@@ -63,6 +66,7 @@ function createAuth() {
       isLoginError,
       isLoggingIn,
       logout,
+      setupUser,
     }
   }
 }

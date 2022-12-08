@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from "vue"
+import { computed, watch, onMounted } from "vue"
 import { RouterView, useRoute, useRouter } from "vue-router"
 
 import { useAuth } from "./utils/composables"
@@ -7,7 +7,7 @@ import { useAuth } from "./utils/composables"
 const router = useRouter()
 const route = useRoute()
 const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
-const { user } = useAuth()
+const { user, setupUser } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
   if (user === undefined || routeIsPrivate === undefined) {
@@ -35,6 +35,10 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
+})
+
+onMounted(() => {
+  setupUser()
 })
 </script>
 
