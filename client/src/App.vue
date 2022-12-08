@@ -46,6 +46,7 @@ onMounted(() => {
   <v-app>
     <v-navigation-drawer expand-on-hover rail v-if="user">
       <v-list>
+      <!-- TODO: fix info not showing on login -->
         <v-list-item
           :title="user.fullName"
           :subtitle="user.username"
@@ -63,7 +64,13 @@ onMounted(() => {
       <!-- TODO: add logout -->
     </v-navigation-drawer>
     <v-main>
-      <!-- TODO: add loading -->
+      <v-row v-if="user === undefined" justify="center" align="center" class="h-screen">
+        <v-progress-circular
+          color="primary"
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-row>
       <div class="p-2">
         <router-view v-if="user !== undefined" />
       </div>
