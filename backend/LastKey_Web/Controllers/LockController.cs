@@ -53,12 +53,9 @@ public class LockController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet()]
-    public async Task<ActionResult<List<Lock>>> RetrieveLocksForUser()
+    [HttpGet("users/{userId}")]
+    public async Task<ActionResult<List<Lock>>> RetrieveLocksForUser(int userId)
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
-
         var userLocks = await _lockService.RetrieveUserLocksAsync(userId);
 
         return Ok(userLocks);
@@ -110,12 +107,15 @@ public class LockController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{macAddress}")]
-    public async Task<ActionResult<Lock>> GetLockByMacAddress(string macAddress)
+    public async Task<ActionResult<bool>> LockExists(string macAddress)
     {
-        var @lock = await _lockService.RetrieveLockAsync(macAddress);
+        return Ok(await _lockService.LockExistsAsync(macAddress));
+    }
 
-        if (@lock == null) return NotFound();
-
-        return Ok(@lock);
+    [AllowAnonymous]
+    [HttpGet("state/{macAddress}")]
+    public async Task<ActionResult<bool>> GetLockState(string macAddress)
+    {
+        return Ok(await _lockService.RetrieveLockStateAsync(macAddress));
     }
 }
