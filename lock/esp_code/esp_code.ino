@@ -11,12 +11,11 @@ String httpGetRequest(String url) {
   
   String payload = "{}"; 
   
-  if (httpResponseCode>0) {
+  if (httpResponseCode > 0) {
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
     payload = http.getString();
-  }
-  else {
+  } else {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
   }
@@ -28,46 +27,46 @@ String httpGetRequest(String url) {
 
 WiFiManager wm;
 
-
 void setup() {
-    // WiFi.mode(WIFI_STA);
-
     Serial.begin(9600);
-
-    // wm.setDebugOutput(false);
-
-    // just for testing purposes
-    wm.resetSettings();
 
     bool res = wm.autoConnect("LockAP");
 
-    // if registered but unpaired, reconnect as AP
+    // if connected as a client, check if device is paired and connect as AP or continue as client accordingly
     if (res) {
-      String url = "http://lastkey.azurewebsites.net/api/locks/" + WiFi.macAddress();
-      String lockRegistered = httpGetRequest(url);
+      String APMac = WiFi.softAPmacAddress();
+      // TODO: should be lowered at the backend side
+      APMac.toLowerCase();
 
-      Serial.println(lockRegistered);
-      Serial.println(WiFi.macAddress());
+      String url = "http://lastkey.azurewebsites.net/api/locks/" + APMac;
+      String lockRegistered = httpGetRequest(url);
       
       if (lockRegistered == "false") {
         wm.resetSettings();
-        res = wm.autoConnect("LockAP");
+        setup();
       }
     } else {
-      ESP.restart();
+      wm.resetSettings();
+      setup();
     }
+
 }
 
 void loop() {
-  String url = "http://lastkey.azurewebsites.net/api/locks/" + WiFi.macAddress();
+  String APMac = WiFi.softAPmacAddress();
+  // TODO: should be lowered at the backend side
+  APMac.toLowerCase();
+
+  String url = "http://lastkey.azurewebsites.net/api/locks/" + APMac;
+  
   String lockRegistered = httpGetRequest(url);
 
-  // if at any moment during loop the device gets unpaired, re-setup as AP
+  // if lock unpaired during loop, reset as AP
   if (lockRegistered == "false") {
     wm.resetSettings();	
     setup();
   } else {
-    url = "http://lastkey.azurewebsites.net/api/locks/state/" + WiFi.macAddress();
+    url = "http://lastkey.azurewebsites.net/api/locks/state/" + APMac;
     String isLocked = httpGetRequest(url);
 
     // this if statement will also check if the lock is already locked or not when I implement the actual relay
@@ -81,5 +80,5 @@ void loop() {
     }
   }
 
-  delay(5000);
+  delay(2500);
 }
