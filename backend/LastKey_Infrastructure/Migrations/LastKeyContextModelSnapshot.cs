@@ -21,7 +21,42 @@ namespace LastKey_Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("LastKey_Infrastructure.Models.User.User", b =>
+            modelBuilder.Entity("LastKey_Domain.Entities.Lock", b =>
+                {
+                    b.Property<int>("LockId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LockId"), 1L, 1);
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_locked");
+
+                    b.Property<string>("LockName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("MacAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("mac_address");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("admin_id");
+
+                    b.HasKey("LockId");
+
+                    b.HasIndex("UserId", "LockName")
+                        .IsUnique();
+
+                    b.ToTable("Locks");
+                });
+
+            modelBuilder.Entity("LastKey_Domain.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -60,6 +95,22 @@ namespace LastKey_Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LastKey_Domain.Entities.Lock", b =>
+                {
+                    b.HasOne("LastKey_Domain.Entities.User", "User")
+                        .WithMany("Locks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LastKey_Domain.Entities.User", b =>
+                {
+                    b.Navigation("Locks");
                 });
 #pragma warning restore 612, 618
         }

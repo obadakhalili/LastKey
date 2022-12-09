@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -44,19 +45,16 @@ public class UsersController : ControllerBase
 
         HttpContext.Response.Cookies.Append("jwtHeader", authenticationResponse.JwtHeader!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = true
         });
         
         HttpContext.Response.Cookies.Append("jwtSignature", authenticationResponse.JwtSignature!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = true
         });
         
         HttpContext.Response.Cookies.Append("jwtPayload", authenticationResponse.JwtPayload!, new CookieOptions
         {
-            Secure = true,
             HttpOnly = false
         });
 
@@ -73,14 +71,37 @@ public class UsersController : ControllerBase
     }
     
     [Authorize]
-    [HttpGet("user/{userId}")]
-    public async Task<ActionResult<User>> GetUserInfo(int userId)
+    [HttpGet("me")]
+    public async Task<ActionResult<User>> GetUserInfo()
     {
+        var token = GetToken(Request);
+        var userId = GetUserIdFromToken(token);
+
         var userInfo = await _userService.RetrieveUserInfoByIdAsync(userId);
 
         if (userInfo == null)
             return NotFound();
 
         return Ok(userInfo);
+    }
+
+    private int GetUserIdFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+
+        var jsonToken = handler.ReadJwtToken(token);
+        var userId = jsonToken.Claims.First(claim => claim.Type == "userId")
+            .Value;
+
+        return Int32.Parse(userId);
+    }
+
+    private string GetToken(HttpRequest request)
+    {
+        request.Cookies.TryGetValue("jwtHeader", out var jwtHeader);
+        request.Cookies.TryGetValue("jwtPayload", out var jwtPayload);
+        request.Cookies.TryGetValue("jwtSignature", out var jwtSignature);
+
+        return $"{jwtHeader}.{jwtPayload}.{jwtSignature}";
     }
 }

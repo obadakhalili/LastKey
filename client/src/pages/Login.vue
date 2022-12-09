@@ -48,13 +48,8 @@ function handleLoginFormSubmit() {
     ></v-text-field>
     <div class="flex justify-between">
       <Link link="/signup" text="Create an account" />
-      <v-btn
-        type="submit"
-        :disabled="isLoggingIn"
-        color="success"
-        :prepend-icon="isLoggingIn ? 'mdi-loading mdi-spin' : 'mdi-login'"
-      >
-        {{ isLoggingIn ? "Logging in..." : "Login" }}
+      <v-btn type="submit" color="success" :loading="isLoggingIn">
+        Login
       </v-btn>
     </div>
   </v-form>

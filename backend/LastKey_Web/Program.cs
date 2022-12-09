@@ -62,11 +62,13 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseCookiePolicy(new CookiePolicyOptions
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    Secure = CookieSecurePolicy.SameAsRequest
+});
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();

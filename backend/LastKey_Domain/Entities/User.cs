@@ -2,7 +2,7 @@
 
 namespace LastKey_Domain.Entities;
 
-public record User 
+public record User
 {
     [Column("id")]
     public int UserId { get; set; }
@@ -21,4 +21,6 @@ public record User
 
     [Column("is_admin")]
     public bool IsAdmin { get; set; }
+
+    public List<Lock> Locks { get; set; } = new();
 }

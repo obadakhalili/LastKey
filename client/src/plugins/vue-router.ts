@@ -25,7 +25,15 @@ const router = createRouter({
       meta: {
         private: true,
       },
-      component: () => import("@/pages/DoorLocking.vue"),
+      component: () => import("@/pages/Home.vue"),
+    },
+    {
+      path: "/locks-management",
+      name: "LocksManagement",
+      meta: {
+        private: true,
+      },
+      component: () => import("@/pages/LocksManagement.vue"),
     },
     // TODO: 404 page
   ],
