@@ -1,9 +1,6 @@
 import { computed, ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import axios, { AxiosError, AxiosResponse } from "axios"
-import jwtDecode from "jwt-decode"
-
-import { findCookie } from "./helpers"
 
 export interface LoginRequest {
   username: string
@@ -18,7 +15,7 @@ export interface UserInfoResponse {
 }
 
 function createAuth() {
-  const user = ref<UserInfoResponse | null | undefined>(undefined)
+  const user = ref<UserInfoResponse | null | undefined>()
 
   return function useAuth() {
     const {
@@ -26,13 +23,13 @@ function createAuth() {
       isLoading: isLoggingIn,
       failureReason,
       isError: isLoginError,
-    } = useMutation<UserInfoResponse, AxiosError, LoginRequest>({
+    } = useMutation<AxiosResponse<UserInfoResponse>, AxiosError, LoginRequest>({
       mutationKey: ["login"],
       mutationFn: (loginInfo) => {
         return axios.post("/api/users/login", loginInfo)
       },
-      onSuccess: (data) => {
-        user.value = data
+      onSuccess: (response) => {
+        user.value = response.data
       },
     })
 
@@ -50,22 +47,16 @@ function createAuth() {
       },
     })
 
-    async function verifyTokenPayloadCookie() {
-      try {
-        const encodedPayload = findCookie("jwtPayload")
-        const jwtToken = `header.${encodedPayload}.signature`
-        const decodedPayload = jwtDecode<{ userId: number | undefined }>(
-          jwtToken,
-        )
-        const response = await axios.get<
-          unknown,
-          AxiosResponse<UserInfoResponse>
-        >(`/api/users/user/${decodedPayload.userId}`)
-
-        user.value = response.data
-      } catch {
-        user.value = null
-      }
+    // NOTE: This should be executed on invocation of ceateAuth(), but for some reason it won't work on mobile
+    function setupUser() {
+      axios
+        .get("/api/users/me")
+        .then((response: AxiosResponse<UserInfoResponse>) => {
+          user.value = response.data
+        })
+        .catch(() => {
+          user.value = null
+        })
     }
 
     return {
@@ -75,7 +66,7 @@ function createAuth() {
       isLoginError,
       isLoggingIn,
       logout,
-      verifyTokenPayloadCookie,
+      setupUser,
     }
   }
 }

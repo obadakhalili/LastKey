@@ -71,7 +71,7 @@ public class UsersController : ControllerBase
     }
     
     [Authorize]
-    [HttpGet()]
+    [HttpGet("me")]
     public async Task<ActionResult<User>> GetUserInfo()
     {
         var token = GetToken(Request);
