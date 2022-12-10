@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@capacitor/android': ^4.6.0
+  '@capacitor/camera': ^4.1.4
   '@capacitor/cli': ^4.6.0
   '@capacitor/core': ^4.6.0
   '@ionic-native/core': 5.1.0
@@ -28,6 +29,7 @@ specifiers:
 
 dependencies:
   '@capacitor/android': 4.6.0_@capacitor+core@4.6.0
+  '@capacitor/camera': 4.1.4_@capacitor+core@4.6.0
   '@capacitor/core': 4.6.0
   '@ionic-native/core': 5.1.0_rxjs@6.5.0
   '@ionic-native/wifi-wizard-2': 5.36.0_3wrgepaq6radu3j5qwhvydptpe
@@ -83,6 +85,14 @@ packages:
     resolution: {integrity: sha512-damKRxtkAs7GHdPwQqKyUZjjsbIyOoJWoshG2I1/Lc8cDkfGKw2WntWx3hyUPho0BmM7wnbsjeZtYbMdGm0zIQ==}
     peerDependencies:
       '@capacitor/core': ^4.5.0
+    dependencies:
+      '@capacitor/core': 4.6.0
+    dev: false
+
+  /@capacitor/camera/4.1.4_@capacitor+core@4.6.0:
+    resolution: {integrity: sha512-7f4n7PlnstYsdGyxc0Kc4hIyS6csFLOjXvffm7pJsuy9pSo+kfdOPdYgGg360QwbUAmA+Yv+J1ZW1eFIwgvWrQ==}
+    peerDependencies:
+      '@capacitor/core': ^4.0.0
     dependencies:
       '@capacitor/core': 4.6.0
     dev: false

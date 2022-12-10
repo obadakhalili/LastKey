@@ -55,6 +55,7 @@ onMounted(() => {
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home" title="Home" to="/" />
         <v-list-item
+          v-if="user.isAdmin"
           prepend-icon="mdi-lock"
           title="Locks Management"
           to="/locks-management"
