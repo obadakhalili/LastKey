@@ -3,7 +3,6 @@ using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LastKey_Web.Controllers;
@@ -62,22 +61,31 @@ public class LockController : ControllerBase
         return Ok(userLocks);
     }
 
-    [HttpPatch("{lockId}")]
-    public async Task<ActionResult<Lock>> UpdateLock(int lockId, 
-        [FromBody] JsonPatchDocument<LastKey_Domain.Entities.Lock> patchDocument)
+    [HttpPatch("{lockId}/name/{name}")]
+    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, string name)
     {
-        var request = new UpdateLockRequest
+        if (string.IsNullOrWhiteSpace(name))
         {
+            return BadRequest(new
+            {
+                message = "Please specify a name!"
+            });
+        }
+
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
             LockId = lockId,
-            UserId = JwtSecurityHelper.GetUserIdFromToken(Request)
+            PropertyToUpdate = LockProperties.Name,
+            NewName = name
         };
 
-        var updatedLock = await _lockService.UpdateLockAsync(request, patchDocument);
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
 
         if (updatedLock == null)
             return BadRequest(new
             {
-                message = "Lock wasn't found or doesn't belong to this user!"
+                message = "Lock name already exists for user or Lock doesn't belong to specified user!"
             });
 
         return Ok(updatedLock);
@@ -95,5 +103,53 @@ public class LockController : ControllerBase
     public async Task<ActionResult<bool>> GetLockState(string macAddress)
     {
         return Ok(await _lockService.RetrieveLockStateAsync(macAddress));
+    }
+
+    [HttpPatch("{lockId}/unlock")]
+    public async Task<ActionResult> UnlockLock(int lockId)
+    {
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            LockId = lockId,
+            PropertyToUpdate = LockProperties.LockState,
+            IsLocked = false
+        };
+
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
+
+        if (updatedLock == null)
+        {
+            return BadRequest(new
+            {
+                message = "Lock not found or doesn't belong to user!"
+            });
+        }
+
+        return Ok(updatedLock);
+    }
+    
+    [HttpPatch("{lockId}/lock")]
+    public async Task<ActionResult> LockLock(int lockId)
+    {
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            LockId = lockId,
+            PropertyToUpdate = LockProperties.LockState,
+            IsLocked = true
+        };
+
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
+
+        if (updatedLock == null)
+        {
+            return BadRequest(new
+            {
+                message = "Lock not found or doesn't belong to user!"
+            });
+        }
+
+        return Ok(updatedLock);
     }
 }

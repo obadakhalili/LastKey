@@ -1,7 +1,6 @@
 ﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Infrastructure.Data;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Lock = LastKey_Domain.Entities.Lock;
 
@@ -64,7 +63,7 @@ public class LockRepository : ILockRepository
             .IsLocked;
     }
 
-    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request, JsonPatchDocument<Lock> patchDocument)
+    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request)
     {
         var user = await _context.Users.Include(u => u.Locks)
             .FirstAsync(u => u.UserId == request.UserId);
@@ -74,7 +73,11 @@ public class LockRepository : ILockRepository
         if (@lock == null)
             return null;
 
-        patchDocument.ApplyTo(@lock);
+        if (request.PropertyToUpdate == LockProperties.Name)
+            @lock.LockName = request.NewName;
+
+        if (request.PropertyToUpdate == LockProperties.LockState)
+            @lock.IsLocked = request.IsLocked.GetValueOrDefault();
 
         await _context.SaveChangesAsync();
 

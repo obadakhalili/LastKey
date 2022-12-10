@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace LastKey_Application.Services;
 
@@ -15,14 +14,14 @@ public class LockService : ILockService
         _lockRepository = lockRepository;
         _mapper = mapper;
     }
-    
+
     public async Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId)
     {
         if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, adminId, null))
         {
             return null;
         }
-        
+
         var lockToCreate = _mapper.Map<LastKey_Domain.Entities.Lock>(request);
 
         lockToCreate = lockToCreate with
@@ -57,10 +56,15 @@ public class LockService : ILockService
         return await _lockRepository.GetLockStateAsync(macAddress);
     }
 
-    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request,
-        JsonPatchDocument<LastKey_Domain.Entities.Lock> patchDocument)
+    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request)
     {
-        var updatedLock = await _lockRepository.UpdateLockAsync(request, patchDocument);
+        if (request.NewName != null && 
+            await _lockRepository.LockNameExistsForUserAsync(request.NewName, request.UserId, request.LockId))
+        {
+            return null;
+        }
+
+        var updatedLock = await _lockRepository.UpdateLockAsync(request);
 
         return _mapper.Map<Lock>(updatedLock);
     }
