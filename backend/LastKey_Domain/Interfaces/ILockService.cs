@@ -1,4 +1,5 @@
 ﻿using LastKey_Domain.Entities.DTOs;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace LastKey_Domain.Interfaces;
 
@@ -9,10 +10,10 @@ public interface ILockService
     Task<bool> UnpairLockAsync(int lockId, int adminId);
 
     Task<List<Lock>> RetrieveUserLocksAsync(int userId);
-
-    Task<Lock?> UpdateLockNameAsync(int lockId, string name, int userId);
-
+    
     Task<bool> LockExistsAsync(string macAddress);
 
     Task<bool> RetrieveLockStateAsync(string macAddress);
+
+    Task<Lock?> UpdateLockAsync(UpdateLockRequest request, JsonPatchDocument<Entities.Lock> patchDocument);
 }

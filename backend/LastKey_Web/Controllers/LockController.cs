@@ -1,7 +1,9 @@
-﻿using LastKey_Domain.Entities.DTOs;
+﻿using AutoMapper;
+using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LastKey_Web.Controllers;
@@ -12,10 +14,12 @@ namespace LastKey_Web.Controllers;
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;
+    private readonly IMapper _mapper;
 
-    public LockController(ILockService lockService)
+    public LockController(ILockService lockService, IMapper mapper)
     {
         _lockService = lockService;
+        _mapper = mapper;
     }
 
     [HttpPost]
@@ -59,26 +63,24 @@ public class LockController : ControllerBase
     }
 
     [HttpPatch("{lockId}")]
-    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, [FromBody] UpdateLockRequest request)
+    public async Task<ActionResult<Lock>> UpdateLock(int lockId, 
+        [FromBody] JsonPatchDocument<LastKey_Domain.Entities.Lock> patchDocument)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
+        var request = new UpdateLockRequest
         {
-            return BadRequest();
-        }
-        
-        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+            LockId = lockId,
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request)
+        };
 
-        var updatedLock = await _lockService.UpdateLockNameAsync(lockId, request.Name, userId);
+        var updatedLock = await _lockService.UpdateLockAsync(request, patchDocument);
 
         if (updatedLock == null)
-        {
             return BadRequest(new
             {
-                message = "The name chosen already in use"
+                message = "Lock wasn't found or doesn't belong to this user!"
             });
-        }
 
-        return Ok();
+        return Ok(updatedLock);
     }
 
     [AllowAnonymous]

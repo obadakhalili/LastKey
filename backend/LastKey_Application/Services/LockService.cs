@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace LastKey_Application.Services;
 
@@ -14,7 +15,7 @@ public class LockService : ILockService
         _lockRepository = lockRepository;
         _mapper = mapper;
     }
-
+    
     public async Task<Lock?> RegisterLockAsync(LockPairRequest request, int adminId)
     {
         if (await _lockRepository.LockNameExistsForUserAsync(request.LockName, adminId, null))
@@ -46,16 +47,6 @@ public class LockService : ILockService
         return _mapper.Map<List<Lock>>(userLocks);
     }
 
-    public async Task<Lock?> UpdateLockNameAsync(int lockId, string name, int userId)
-    {
-        if (await _lockRepository.LockNameExistsForUserAsync(name, userId, lockId))
-            return null;
-
-        var updatedLock = await _lockRepository.UpdateLockNameAsync(lockId, name);
-
-        return _mapper.Map<Lock>(updatedLock);
-    }
-
     public async Task<bool> LockExistsAsync(string macAddress)
     {
         return await _lockRepository.LockMacAddressExistsAsync(macAddress);
@@ -64,5 +55,13 @@ public class LockService : ILockService
     public async Task<bool> RetrieveLockStateAsync(string macAddress)
     {
         return await _lockRepository.GetLockStateAsync(macAddress);
+    }
+
+    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request,
+        JsonPatchDocument<LastKey_Domain.Entities.Lock> patchDocument)
+    {
+        var updatedLock = await _lockRepository.UpdateLockAsync(request, patchDocument);
+
+        return _mapper.Map<Lock>(updatedLock);
     }
 }

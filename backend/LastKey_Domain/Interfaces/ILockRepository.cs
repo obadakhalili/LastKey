@@ -1,12 +1,11 @@
 ﻿using LastKey_Domain.Entities.DTOs;
+using Microsoft.AspNetCore.JsonPatch;
 using Lock = LastKey_Domain.Entities.Lock;
 
 namespace LastKey_Domain.Interfaces;
 
 public interface ILockRepository
 {
-    Task<List<Lock>> RetrieveLocksAsync();
-
     Task AddLockAsync(int userId, Lock @lock);
 
     Task<bool> LockNameExistsForUserAsync(string lockName, int userId, int? lockId);
@@ -15,9 +14,9 @@ public interface ILockRepository
 
     Task<List<Lock>> RetrieveLocksForUserAsync(int userId);
 
-    Task<Lock> UpdateLockNameAsync(int lockId, string name);
-
     Task<bool> LockMacAddressExistsAsync(string macAddress);
 
     Task<bool> GetLockStateAsync(string macAddress);
+
+    Task<Lock?> UpdateLockAsync(UpdateLockRequest request, JsonPatchDocument<Lock> patchDocument);
 }

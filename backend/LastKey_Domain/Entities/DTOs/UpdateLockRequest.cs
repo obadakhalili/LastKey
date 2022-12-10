@@ -2,5 +2,7 @@
 
 public class UpdateLockRequest
 {
-    public string Name { get; set; }
+    public int UserId { get; set; }
+
+    public int LockId { get; set; }
 }
