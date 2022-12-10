@@ -2,7 +2,7 @@
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import axios from "axios"
-import { Camera, CameraResultType } from "@capacitor/camera"
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera"
 
 import { useMyLocks, Lock } from "@/utils/apis"
 
@@ -43,6 +43,7 @@ async function handleLockClick() {
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
+        source: CameraSource.Camera,
       })
 
       return await changeLookState({
