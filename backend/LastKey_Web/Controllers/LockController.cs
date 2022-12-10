@@ -107,7 +107,7 @@ public class LockController : ControllerBase
     }
 
     [HttpPatch("{lockId}/unlock")]
-    public async Task<ActionResult> UnlockLock(int lockId, IFormFile image)
+    public async Task<ActionResult> UnlockLock(int lockId, [FromBody] UnlockLockRequest request)
     {
         var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
@@ -120,7 +120,7 @@ public class LockController : ControllerBase
             {"api_key", "QUvSxAb7PoiIBXLBo58oLrkwwWbRFOfv"},
             {"api_secret", "0-sOo5yhXbGPTBdyguJQwZXN7XanzP7B"},
             {"image_base64_1", user!.UserImage},
-            {"image_base64_2", await image.ToBase64ImageAsync()}
+            {"image_base64_2", request.Image}
         };
 
         var freeFaceBody = new FormUrlEncodedContent(freeFaceValues);
