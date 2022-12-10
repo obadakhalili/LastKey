@@ -1,5 +1,4 @@
-﻿using LastKey_Application.Helpers;
-using LastKey_Domain.Entities.DTOs;
+﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -129,7 +128,7 @@ public class LockController : ControllerBase
 
         var freeFaceResponse = await response.Content.ReadFromJsonAsync<FreeFaceResponse>();
 
-        if (freeFaceResponse.confidence != null && freeFaceResponse.confidence < 50)
+        if (freeFaceResponse.confidence != null && freeFaceResponse.confidence < freeFaceResponse.thresholds.e4)
         {
             return Forbid();
         }

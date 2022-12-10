@@ -6,7 +6,7 @@ public class FreeFaceResponse
 
     public float confidence { get; set; }
 
-    public object thresholds { get; set; }
+    public ThresholdsResponse thresholds { get; set; }
 
     public string image_id1 { get; set; }
 
