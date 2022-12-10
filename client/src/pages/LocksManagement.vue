@@ -1,27 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { useMutation, useQuery } from "@tanstack/vue-query"
+import { useMutation } from "@tanstack/vue-query"
 import axios from "axios"
 import { Capacitor } from "@capacitor/core"
 import { WifiWizard2 } from "@ionic-native/wifi-wizard-2"
 
 import fieldValidators from "@/utils/field-validators"
-
-interface Lock {
-  lockId: number
-  lockName: string
-  macAddress: string
-}
-
-type GetMyLocksResponse = Array<Lock>
+import { useMyLocks } from "@/utils/apis"
 
 const {
   data: myLocks,
   isLoading: isLoadingLocks,
   refetch: refetchMyLocks,
-} = useQuery(["my-locks"], () => {
-  return axios.get<GetMyLocksResponse>("/api/locks").then((res) => res.data)
-})
+} = useMyLocks()
 
 const { mutateAsync: unpairLock, isLoading: isUnpairingALock } = useMutation(
   (lockId: number) => {
@@ -31,9 +22,7 @@ const { mutateAsync: unpairLock, isLoading: isUnpairingALock } = useMutation(
 
 const { mutateAsync: updateLockName, isLoading: isUpadingALockName } =
   useMutation((lockId: number) => {
-    return axios.patch(`/api/locks/${lockId}`, {
-      name: newLockName.value,
-    })
+    return axios.patch(`/api/locks/${lockId}/name/${newLockName.value}`)
   })
 
 const lockToEdit = ref<number | null>(null)
