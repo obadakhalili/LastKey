@@ -2,7 +2,7 @@
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import axios from "axios"
-import { Camera, CameraResultType } from "@capacitor/camera"
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera"
 
 import { useMyLocks, Lock } from "@/utils/apis"
 
@@ -43,6 +43,7 @@ async function handleLockClick() {
         quality: 90,
         allowEditing: false,
         resultType: CameraResultType.Base64,
+        source: CameraSource.Camera,
       })
 
       return await changeLookState({
@@ -76,29 +77,29 @@ async function handleLockClick() {
       v-model="selectedLock"
       :loading="isLoadingLocks"
     ></v-select>
-    <!-- align center horizonal and veritcal using absolute positioning -->
-    <v-btn
-      class="!h-20 !w-20 !absolute !left-1/2 !top-1/2 !transform !-translate-x-1/2 !-translate-y-1/2"
-      :loading="isChangingLockState || isLoadingLocks"
-      :disabled="!selectedLock"
-      size="x-large"
-      :color="
-        isErrorInMutatingLockingState
-          ? 'error'
-          : selectedLock
-          ? selectedLock.isLocked
-            ? 'info'
-            : 'green'
-          : 'grey'
-      "
-      :icon="
-        selectedLock
-          ? selectedLock.isLocked
-            ? 'mdi-lock-open'
+    <v-row justify="center" class="my-15">
+      <v-btn
+        class="!h-20 !w-20"
+        :loading="isChangingLockState || isLoadingLocks"
+        :disabled="!selectedLock"
+        size="x-large"
+        :color="
+          isErrorInMutatingLockingState
+            ? 'error'
+            : selectedLock
+            ? selectedLock.isLocked
+              ? 'info'
+              : 'green'
+            : 'grey'
+        "
+        :icon="
+          selectedLock
+            ? selectedLock.isLocked
+              ? 'mdi-lock-open'
+              : 'mdi-lock'
             : 'mdi-lock'
-          : 'mdi-lock'
-      "
-      @click="handleLockClick"
-    />
+        "
+        @click="handleLockClick"
+    /></v-row>
   </v-card-text>
 </template>
