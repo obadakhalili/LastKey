@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using LastKey_Application.Helpers;
 using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -31,13 +32,7 @@ public class UserService : IUserService
     {
         var userModel = _mapper.Map<LastKey_Domain.Entities.User>(request);
 
-        var ms = new MemoryStream();
-
-        await request.UserImage.CopyToAsync(ms);
-
-        var userImageFileBytes = ms.ToArray();
-
-        var b64UserImage = Convert.ToBase64String(userImageFileBytes);
+        var b64UserImage = await request.UserImage.ToBase64ImageAsync();
 
         userModel = userModel with
         {
@@ -94,7 +89,8 @@ public class UserService : IUserService
     {
         var claims = new List<Claim>
         {
-            new Claim("userId", user.UserId.ToString())
+            new Claim("userId", user.UserId.ToString()),
+            new Claim(ClaimTypes.Role, user.IsAdmin ? nameof(Roles.Admin) : nameof(Roles.User))
         };
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -139,5 +135,4 @@ public class UserService : IUserService
         cookiesToClear.Delete("jwtSignature");
         cookiesToClear.Delete("jwtPayload");
     }
-    
 }

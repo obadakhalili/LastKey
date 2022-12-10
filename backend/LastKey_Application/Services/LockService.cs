@@ -21,7 +21,7 @@ public class LockService : ILockService
         {
             return null;
         }
-        
+
         var lockToCreate = _mapper.Map<LastKey_Domain.Entities.Lock>(request);
 
         lockToCreate = lockToCreate with
@@ -46,16 +46,6 @@ public class LockService : ILockService
         return _mapper.Map<List<Lock>>(userLocks);
     }
 
-    public async Task<Lock?> UpdateLockNameAsync(int lockId, string name, int userId)
-    {
-        if (await _lockRepository.LockNameExistsForUserAsync(name, userId, lockId))
-            return null;
-
-        var updatedLock = await _lockRepository.UpdateLockNameAsync(lockId, name);
-
-        return _mapper.Map<Lock>(updatedLock);
-    }
-
     public async Task<bool> LockExistsAsync(string macAddress)
     {
         return await _lockRepository.LockMacAddressExistsAsync(macAddress);
@@ -64,5 +54,18 @@ public class LockService : ILockService
     public async Task<bool> RetrieveLockStateAsync(string macAddress)
     {
         return await _lockRepository.GetLockStateAsync(macAddress);
+    }
+
+    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request)
+    {
+        if (request.NewName != null && 
+            await _lockRepository.LockNameExistsForUserAsync(request.NewName, request.UserId, request.LockId))
+        {
+            return null;
+        }
+
+        var updatedLock = await _lockRepository.UpdateLockAsync(request);
+
+        return _mapper.Map<Lock>(updatedLock);
     }
 }

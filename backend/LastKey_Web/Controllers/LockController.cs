@@ -1,11 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using LastKey_Domain.Entities.DTOs;
+﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
-using Microsoft.AspNetCore.Authentication;
+using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 
 namespace LastKey_Web.Controllers;
 
@@ -15,17 +12,19 @@ namespace LastKey_Web.Controllers;
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;
+    private readonly IUserService _userService;
 
-    public LockController(ILockService lockService)
+    public LockController(ILockService lockService, IUserService userService)
     {
         _lockService = lockService;
+        _userService = userService;
     }
 
-    [HttpPost()]
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpPost]
     public async Task<ActionResult<Lock>> PairLockToUser([FromBody] LockPairRequest request)
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var createdLock = await _lockService.RegisterLockAsync(request, userId);
 
@@ -40,8 +39,7 @@ public class LockController : ControllerBase
     [HttpDelete("{lockId}")]
     public async Task<ActionResult> UnpairLock([FromRoute] int lockId)
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var isDeleted = await _lockService.UnpairLockAsync(lockId, userId);
 
@@ -53,59 +51,44 @@ public class LockController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet()]
+    [HttpGet]
     public async Task<ActionResult<List<Lock>>> RetrieveLocksForUser()
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var userLocks = await _lockService.RetrieveUserLocksAsync(userId);
 
         return Ok(userLocks);
     }
 
-    [HttpPatch("{lockId}")]
-    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, [FromBody] UpdateLockRequest request)
+    [HttpPatch("{lockId}/name/{name}")]
+    public async Task<ActionResult<Lock>> UpdateLockName(int lockId, string name)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return BadRequest();
-        }
-
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
-
-        var updatedLock = await _lockService.UpdateLockNameAsync(lockId, request.Name, userId);
-
-        if (updatedLock == null)
+        if (string.IsNullOrWhiteSpace(name))
         {
             return BadRequest(new
             {
-                message = "The name chosen already in use"
+                message = "Please specify a name!"
             });
         }
 
-        return Ok();
-    }
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            LockId = lockId,
+            PropertyToUpdate = LockProperties.Name,
+            NewName = name
+        };
 
-    private int GetUserIdFromToken(string token)
-    {
-        var handler = new JwtSecurityTokenHandler();
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
 
-        var jsonToken = handler.ReadJwtToken(token);
-        var userId = jsonToken.Claims.First(claim => claim.Type == "userId")
-            .Value;
+        if (updatedLock == null)
+            return BadRequest(new
+            {
+                message = "Lock name already exists for user or Lock doesn't belong to specified user!"
+            });
 
-        return Int32.Parse(userId);
-    }
-
-    private string GetToken(HttpRequest request)
-    {
-        request.Cookies.TryGetValue("jwtHeader", out var jwtHeader);
-        request.Cookies.TryGetValue("jwtPayload", out var jwtPayload);
-        request.Cookies.TryGetValue("jwtSignature", out var jwtSignature);
-
-        return $"{jwtHeader}.{jwtPayload}.{jwtSignature}";
+        return Ok(updatedLock);
     }
 
     [AllowAnonymous]
@@ -120,5 +103,82 @@ public class LockController : ControllerBase
     public async Task<ActionResult<bool>> GetLockState(string macAddress)
     {
         return Ok(await _lockService.RetrieveLockStateAsync(macAddress));
+    }
+
+    [HttpPatch("{lockId}/unlock")]
+    public async Task<ActionResult> UnlockLock(int lockId, [FromBody] UnlockLockRequest request)
+    {
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var user = await _userService.RetrieveUserInfoByIdAsync(userId);
+
+        var client = new HttpClient();
+
+        var freeFaceValues = new Dictionary<string, string>
+        {
+            {"api_key", "QUvSxAb7PoiIBXLBo58oLrkwwWbRFOfv"},
+            {"api_secret", "0-sOo5yhXbGPTBdyguJQwZXN7XanzP7B"},
+            {"image_base64_1", user!.UserImage},
+            {"image_base64_2", request.Image}
+        };
+
+        var freeFaceBody = new FormUrlEncodedContent(freeFaceValues);
+
+        var response = await client.PostAsync("https://api-us.faceplusplus.com/facepp/v3/compare", freeFaceBody);
+
+        var freeFaceResponse = await response.Content.ReadFromJsonAsync<FreeFaceResponse>();
+
+        if (freeFaceResponse.confidence != null && freeFaceResponse.confidence < freeFaceResponse.thresholds.e4)
+        {
+            return Forbid();
+        }
+        
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            LockId = lockId,
+            PropertyToUpdate = LockProperties.LockState,
+            IsLocked = false
+        };
+
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
+
+        if (updatedLock == null)
+        {
+            return BadRequest(new
+            {
+                message = "Lock not found or doesn't belong to user!"
+            });
+        }
+
+        return Ok(new
+        {
+            updatedLock,
+            freeFaceResponse
+        });
+    }
+    
+    [HttpPatch("{lockId}/lock")]
+    public async Task<ActionResult> LockLock(int lockId)
+    {
+        var updateRequest = new UpdateLockRequest
+        {
+            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            LockId = lockId,
+            PropertyToUpdate = LockProperties.LockState,
+            IsLocked = true
+        };
+
+        var updatedLock = await _lockService.UpdateLockAsync(updateRequest);
+
+        if (updatedLock == null)
+        {
+            return BadRequest(new
+            {
+                message = "Lock not found or doesn't belong to user!"
+            });
+        }
+
+        return Ok(updatedLock);
     }
 }

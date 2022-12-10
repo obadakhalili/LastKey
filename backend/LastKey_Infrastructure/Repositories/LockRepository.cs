@@ -15,11 +15,6 @@ public class LockRepository : ILockRepository
         _context = context;
     }
     
-    public async Task<List<Lock>> RetrieveLocksAsync()
-    {
-        return await _context.Locks.ToListAsync();
-    }
-
     public async Task AddLockAsync(int userId, Lock @lock)
     {
         var user = await _context.Users.FirstAsync(u => u.UserId == userId);
@@ -56,18 +51,7 @@ public class LockRepository : ILockRepository
 
         return user.Locks;
     }
-
-    public async Task<Lock> UpdateLockNameAsync(int lockId, string name)
-    {
-        var @lock = await _context.Locks.FirstAsync(l => l.LockId == lockId);
-
-        @lock.LockName = name;
-
-        await _context.SaveChangesAsync();
-
-        return @lock;
-    }
-
+    
     public async Task<bool> LockMacAddressExistsAsync(string macAddress)
     {
         return await _context.Locks.AnyAsync(l => l.MacAddress == macAddress);
@@ -75,8 +59,28 @@ public class LockRepository : ILockRepository
 
     public async Task<bool> GetLockStateAsync(string macAddress)
     {
-        return ((await _context.Locks.FirstOrDefaultAsync(l => l.MacAddress == macAddress))!)
+        return (await _context.Locks.FirstOrDefaultAsync(l => l.MacAddress == macAddress))!
             .IsLocked;
+    }
 
+    public async Task<Lock?> UpdateLockAsync(UpdateLockRequest request)
+    {
+        var user = await _context.Users.Include(u => u.Locks)
+            .FirstAsync(u => u.UserId == request.UserId);
+
+        var @lock = user.Locks.FirstOrDefault(l => l.LockId == request.LockId);
+
+        if (@lock == null)
+            return null;
+
+        if (request.PropertyToUpdate == LockProperties.Name)
+            @lock.LockName = request.NewName;
+
+        if (request.PropertyToUpdate == LockProperties.LockState)
+            @lock.IsLocked = request.IsLocked.GetValueOrDefault();
+
+        await _context.SaveChangesAsync();
+
+        return @lock;
     }
 }
