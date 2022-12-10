@@ -1,11 +1,8 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using LastKey_Domain.Entities.DTOs;
+﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
-using Microsoft.AspNetCore.Authentication;
+using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 
 namespace LastKey_Web.Controllers;
 
@@ -21,11 +18,10 @@ public class LockController : ControllerBase
         _lockService = lockService;
     }
 
-    [HttpPost()]
+    [HttpPost]
     public async Task<ActionResult<Lock>> PairLockToUser([FromBody] LockPairRequest request)
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var createdLock = await _lockService.RegisterLockAsync(request, userId);
 
@@ -40,8 +36,7 @@ public class LockController : ControllerBase
     [HttpDelete("{lockId}")]
     public async Task<ActionResult> UnpairLock([FromRoute] int lockId)
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var isDeleted = await _lockService.UnpairLockAsync(lockId, userId);
 
@@ -53,11 +48,10 @@ public class LockController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet()]
+    [HttpGet]
     public async Task<ActionResult<List<Lock>>> RetrieveLocksForUser()
     {
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var userLocks = await _lockService.RetrieveUserLocksAsync(userId);
 
@@ -71,9 +65,8 @@ public class LockController : ControllerBase
         {
             return BadRequest();
         }
-
-        var token = GetToken(Request);
-        var userId = GetUserIdFromToken(token);
+        
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
 
         var updatedLock = await _lockService.UpdateLockNameAsync(lockId, request.Name, userId);
 
@@ -86,26 +79,6 @@ public class LockController : ControllerBase
         }
 
         return Ok();
-    }
-
-    private int GetUserIdFromToken(string token)
-    {
-        var handler = new JwtSecurityTokenHandler();
-
-        var jsonToken = handler.ReadJwtToken(token);
-        var userId = jsonToken.Claims.First(claim => claim.Type == "userId")
-            .Value;
-
-        return Int32.Parse(userId);
-    }
-
-    private string GetToken(HttpRequest request)
-    {
-        request.Cookies.TryGetValue("jwtHeader", out var jwtHeader);
-        request.Cookies.TryGetValue("jwtPayload", out var jwtPayload);
-        request.Cookies.TryGetValue("jwtSignature", out var jwtSignature);
-
-        return $"{jwtHeader}.{jwtPayload}.{jwtSignature}";
     }
 
     [AllowAnonymous]

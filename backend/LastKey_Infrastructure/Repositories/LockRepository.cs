@@ -1,5 +1,4 @@
-﻿using LastKey_Domain.Entities.DTOs;
-using LastKey_Domain.Interfaces;
+﻿using LastKey_Domain.Interfaces;
 using LastKey_Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Lock = LastKey_Domain.Entities.Lock;
@@ -75,8 +74,7 @@ public class LockRepository : ILockRepository
 
     public async Task<bool> GetLockStateAsync(string macAddress)
     {
-        return ((await _context.Locks.FirstOrDefaultAsync(l => l.MacAddress == macAddress))!)
+        return (await _context.Locks.FirstOrDefaultAsync(l => l.MacAddress == macAddress))!
             .IsLocked;
-
     }
 }
