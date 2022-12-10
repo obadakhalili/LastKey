@@ -94,7 +94,8 @@ public class UserService : IUserService
     {
         var claims = new List<Claim>
         {
-            new Claim("userId", user.UserId.ToString())
+            new Claim("userId", user.UserId.ToString()),
+            new Claim(ClaimTypes.Role, user.IsAdmin ? nameof(Roles.Admin) : nameof(Roles.User))
         };
         var tokenDescriptor = new SecurityTokenDescriptor
         {

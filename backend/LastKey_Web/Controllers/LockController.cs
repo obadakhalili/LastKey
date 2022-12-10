@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using LastKey_Domain.Entities.DTOs;
+﻿using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -13,14 +12,13 @@ namespace LastKey_Web.Controllers;
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;
-    private readonly IMapper _mapper;
 
-    public LockController(ILockService lockService, IMapper mapper)
+    public LockController(ILockService lockService)
     {
         _lockService = lockService;
-        _mapper = mapper;
     }
 
+    [Authorize(Roles = nameof(Roles.Admin))]
     [HttpPost]
     public async Task<ActionResult<Lock>> PairLockToUser([FromBody] LockPairRequest request)
     {
