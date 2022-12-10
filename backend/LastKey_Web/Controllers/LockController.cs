@@ -1,4 +1,5 @@
-﻿using LastKey_Domain.Entities.DTOs;
+﻿using LastKey_Application.Helpers;
+using LastKey_Domain.Entities.DTOs;
 using LastKey_Domain.Interfaces;
 using LastKey_Web.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +13,12 @@ namespace LastKey_Web.Controllers;
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;
+    private readonly IUserService _userService;
 
-    public LockController(ILockService lockService)
+    public LockController(ILockService lockService, IUserService userService)
     {
         _lockService = lockService;
+        _userService = userService;
     }
 
     [Authorize(Roles = nameof(Roles.Admin))]
@@ -104,8 +107,33 @@ public class LockController : ControllerBase
     }
 
     [HttpPatch("{lockId}/unlock")]
-    public async Task<ActionResult> UnlockLock(int lockId)
+    public async Task<ActionResult> UnlockLock(int lockId, IFormFile image)
     {
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var user = await _userService.RetrieveUserInfoByIdAsync(userId);
+
+        var client = new HttpClient();
+
+        var freeFaceValues = new Dictionary<string, string>
+        {
+            {"api_key", "QUvSxAb7PoiIBXLBo58oLrkwwWbRFOfv"},
+            {"api_secret", "0-sOo5yhXbGPTBdyguJQwZXN7XanzP7B"},
+            {"image_base64_1", user!.UserImage},
+            {"image_base64_2", await image.ToBase64ImageAsync()}
+        };
+
+        var freeFaceBody = new FormUrlEncodedContent(freeFaceValues);
+
+        var response = await client.PostAsync("https://api-us.faceplusplus.com/facepp/v3/compare", freeFaceBody);
+
+        var freeFaceResponse = await response.Content.ReadFromJsonAsync<FreeFaceResponse>();
+
+        if (freeFaceResponse.confidence != null && freeFaceResponse.confidence < 50)
+        {
+            return Forbid();
+        }
+        
         var updateRequest = new UpdateLockRequest
         {
             UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
@@ -124,7 +152,11 @@ public class LockController : ControllerBase
             });
         }
 
-        return Ok(updatedLock);
+        return Ok(new
+        {
+            updatedLock,
+            freeFaceResponse
+        });
     }
     
     [HttpPatch("{lockId}/lock")]
