@@ -33,9 +33,6 @@ void setup() {
 
     pinMode(relayPin, OUTPUT);
 
-    // just for testing purposes
-    wm.resetSettings();
-
     bool res = wm.autoConnect("LockAP");
 
     // if connected as a client, check if device is paired and connect as AP or continue as client accordingly
@@ -78,14 +75,14 @@ void loop() {
     int state = digitalRead(relayPin);
 
     // this if statement will also check if the lock is already locked or not when I implement the actual relay
-    if (isLocked == "true" && state == HIGH){
+    if (isLocked == "true" && state == HIGH) {
       Serial.println("Locking");
       state = LOW;
       digitalWrite(relayPin, state);
     }
     
    // again, the same check would be here as above
-    if (isLocked == "false" && state == LOW){
+    if (isLocked == "false" && state == LOW) {
       Serial.println("Unlocking");
       state = HIGH;
       digitalWrite(relayPin, state);
