@@ -31,6 +31,24 @@ public class UsersController : ControllerBase
 
         return Ok(createdUser);
     }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpPost("user/members")]
+    public async Task<ActionResult<User>> AddMembers([FromForm] CreateUserRequest request)
+    {
+        if (await _userService.UsernameExistsAsync(request.Username))
+        {
+            return BadRequest(new {
+                message = "Username already exists"
+            });
+        }
+        
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var createdUser = await _userService.AddMemberToUserAsync(userId, request);
+
+        return Ok(createdUser);
+    }
     
 
     [AllowAnonymous]
