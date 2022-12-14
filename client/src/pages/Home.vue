@@ -12,9 +12,10 @@ const {
   refetch: refetchMyLocks,
 } = useMyLocks({
   onSuccess: (locks) => {
-    if (locks.length > 0) {
-      selectedLock.value = locks[0]
-    }
+    // NOTE: we do this to trigger a state change in the selected lock. might not be the best way to do this
+    selectedLock.value =
+      locks.find((lock) => lock.lockId === selectedLock.value?.lockId) ||
+      locks[0]
   },
 })
 const selectedLock = ref<Lock | undefined>()
@@ -73,7 +74,7 @@ async function handleLockClick() {
       label="Select a look to (un)lock"
       :items="myLocks"
       item-title="lockName"
-      item-value="lockId"
+      :item-value="(lock) => lock"
       v-model="selectedLock"
       :loading="isLoadingLocks"
     ></v-select>
