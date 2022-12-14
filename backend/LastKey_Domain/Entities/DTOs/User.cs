@@ -11,4 +11,6 @@ public class User
     public bool IsAdmin { get; set; }
 
     public string UserImage { get; set; }
+
+    public int? AdminId { get; set; }
 }
