@@ -7,7 +7,7 @@ import { useAuth } from "./utils/composables"
 const router = useRouter()
 const route = useRoute()
 const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
-const { user, setupUser } = useAuth()
+const { user, setupUser, logout } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
   if (user === undefined || routeIsPrivate === undefined) {
@@ -61,7 +61,16 @@ onMounted(() => {
           to="/locks-management"
         />
       </v-list>
-      <!-- TODO: add logout -->
+      <!-- add the end of the nav bar, add logout button -->
+      <template v-slot:append>
+        <v-list density="compact" nav>
+          <v-list-item
+            prepend-icon="mdi-logout"
+            title="Logout"
+            @click="() => logout()"
+          />
+        </v-list>
+      </template>
     </v-navigation-drawer>
     <v-main>
       <v-row
