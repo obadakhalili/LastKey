@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import axios from "axios"
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera"
 
-import { useMyLocks } from "@/utils/apis"
+import { useMyLocks, Lock } from "@/utils/apis"
 
 const {
   data: myLocks,
@@ -13,28 +13,27 @@ const {
 } = useMyLocks({
   onSuccess: (locks) => {
     if (locks.length > 0) {
-      selectedLockId.value = locks[0].lockId
+      selectedLock.value = locks[0]
     }
   },
 })
-const selectedLockId = ref<number | undefined>()
-const selectedLock = computed(() =>
-  myLocks.value?.find((lock) => lock.lockId === selectedLockId.value),
-)
+const selectedLock = ref<Lock | undefined>()
 
 const {
   mutateAsync: changeLookState,
   isLoading: isChangingLockState,
   isError: isErrorInMutatingLockingState,
 } = useMutation((vars: { lock: true } | { lock: false; image: string }) => {
+  const lockId = selectedLock.value!.lockId
+
   if (!vars.lock) {
     return axios.patch<unknown, unknown, { image: string }>(
-      `/api/locks/${selectedLockId.value}/unlock`,
+      `/api/locks/${lockId}/unlock`,
       { image: vars.image },
     )
   }
 
-  return axios.patch(`/api/locks/${selectedLockId.value}/lock`)
+  return axios.patch(`/api/locks/${lockId}/lock`)
 })
 
 async function handleLockClick() {
@@ -75,14 +74,14 @@ async function handleLockClick() {
       :items="myLocks"
       item-title="lockName"
       item-value="lockId"
-      v-model="selectedLockId"
+      v-model="selectedLock"
       :loading="isLoadingLocks"
     ></v-select>
     <v-row justify="center" class="my-15">
       <v-btn
         class="!h-20 !w-20"
         :loading="isChangingLockState || isLoadingLocks"
-        :disabled="!selectedLockId"
+        :disabled="!selectedLock"
         size="x-large"
         :color="
           isErrorInMutatingLockingState
