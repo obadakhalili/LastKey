@@ -111,4 +111,20 @@ public class UsersController : ControllerBase
 
         return Ok(members ?? new List<User>());
     }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpDelete("user/members/{memberId}")]
+    public async Task<ActionResult> DeleteMember(int memberId)
+    {
+        var adminId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var isDeleted = await _userService.RemoveMemberAsync(memberId, adminId);
+
+        return isDeleted
+            ? NoContent()
+            : NotFound(new
+            {
+                message = "The specified user was not found!"
+            });
+    }
 }
