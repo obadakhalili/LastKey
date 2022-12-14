@@ -37,4 +37,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.AnyAsync(u => u.UserName == username);
     }
+
+    public List<User> RetrieveMembersByUserId(int userId)
+    {
+        return _context.Users.Where(u => u.AdminId == userId).ToList();
+    }
 }

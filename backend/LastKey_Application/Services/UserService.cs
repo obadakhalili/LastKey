@@ -154,4 +154,10 @@ public class UserService : IUserService
 
         return createdUser;
     }
+
+    public List<User> RetrieveMembersForUserAsync(int userId)
+    {
+        return _userRepository.RetrieveMembersByUserId(userId)
+            .Select(u => _mapper.Map<User>(u)).ToList();
+    }
 }

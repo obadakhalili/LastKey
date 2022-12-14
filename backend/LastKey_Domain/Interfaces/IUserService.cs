@@ -15,4 +15,6 @@ public interface IUserService
     Task<bool> UsernameExistsAsync(string username);
 
     Task<User> AddMemberToUserAsync(int userId, CreateUserRequest request);
+
+    List<User>? RetrieveMembersForUserAsync(int userId);
 }

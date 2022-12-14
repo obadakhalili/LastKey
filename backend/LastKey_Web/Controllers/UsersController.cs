@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LastKey_Web.Controllers;
 
+[Authorize]
 [Controller]
 [Route("api/users")]
 public class UsersController : ControllerBase
@@ -17,6 +18,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
     
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser([FromForm] CreateUserRequest request)
     {
@@ -78,7 +80,6 @@ public class UsersController : ControllerBase
         return Ok(authenticationResponse.User);
     }
 
-    [Authorize]
     [HttpPost("logout")]
     public ActionResult LogoutUser()
     {
@@ -87,7 +88,6 @@ public class UsersController : ControllerBase
         return Ok();
     }
     
-    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<User>> GetUserInfo()
     {
@@ -99,5 +99,16 @@ public class UsersController : ControllerBase
             return NotFound();
 
         return Ok(userInfo);
+    }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpGet("user/members")]
+    public ActionResult<List<User>> GetMembersForUser()
+    {
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var members = _userService.RetrieveMembersForUserAsync(userId);
+
+        return Ok(members ?? new List<User>());
     }
 }
