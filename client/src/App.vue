@@ -54,14 +54,19 @@ onMounted(() => {
       <v-divider></v-divider>
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home" title="Home" to="/" />
-        <v-list-item
-          v-if="user.isAdmin"
-          prepend-icon="mdi-lock"
-          title="Locks Management"
-          to="/locks-management"
-        />
+        <template v-if="user.isAdmin">
+          <v-list-item
+            prepend-icon="mdi-lock"
+            title="My Locks"
+            to="/locks-management"
+          />
+          <v-list-item
+            prepend-icon="mdi-account-group"
+            title="Members"
+            to="/members-management"
+          />
+        </template>
       </v-list>
-      <!-- add the end of the nav bar, add logout button -->
       <template v-slot:append>
         <v-list density="compact" nav>
           <v-list-item

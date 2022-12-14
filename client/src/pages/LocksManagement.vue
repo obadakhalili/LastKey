@@ -170,10 +170,9 @@ const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
                     pairToALock({
                       name: accessPoint.SSID,
                       macAddress: accessPoint.BSSID,
-                    }).then(() => {
-                      isPairingANewLockDialogOpen = false
-                      refetchMyLocks()
                     })
+                      .then(() => refetchMyLocks())
+                      .then(() => (isPairingANewLockDialogOpen = false))
                   "
                   :disabled="
                     isPairingToALock ||

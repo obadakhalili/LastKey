@@ -72,6 +72,7 @@ async function handleLockClick() {
   <v-card-text>
     <v-select
       label="Select a look to (un)lock"
+      no-data-text="No locks found"
       :items="myLocks"
       item-title="lockName"
       :item-value="(lock) => lock"
