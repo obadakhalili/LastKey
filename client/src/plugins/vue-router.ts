@@ -35,6 +35,14 @@ const router = createRouter({
       },
       component: () => import("@/pages/LocksManagement.vue"),
     },
+    {
+      path: "/members-management",
+      name: "MembersManagement",
+      meta: {
+        private: true,
+      },
+      component: () => import("@/pages/MembersManagement.vue"),
+    },
     // TODO: 404 page
   ],
 })

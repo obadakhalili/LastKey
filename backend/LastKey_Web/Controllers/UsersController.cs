@@ -35,7 +35,7 @@ public class UsersController : ControllerBase
     }
 
     [Authorize(Roles = nameof(Roles.Admin))]
-    [HttpPost("user/members")]
+    [HttpPost("members")]
     public async Task<ActionResult<User>> AddMembers([FromForm] CreateUserRequest request)
     {
         if (await _userService.UsernameExistsAsync(request.Username))
@@ -102,7 +102,7 @@ public class UsersController : ControllerBase
     }
 
     [Authorize(Roles = nameof(Roles.Admin))]
-    [HttpGet("user/members")]
+    [HttpGet("members")]
     public ActionResult<List<User>> GetMembersForUser()
     {
         var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
