@@ -23,6 +23,12 @@ const {
     .then((res) => res.data)
 })
 
+const { mutateAsync: deleteMember, isLoading: isDeletingMember } = useMutation(
+  (memberId: number) => {
+    return axios.delete(`/api/users/members/${memberId}`)
+  },
+)
+
 const isAddingANewMemberDialogOpen = ref(false)
 
 interface AddMemberRequest {
@@ -88,6 +94,18 @@ function handleAddMemberFormSubmit() {
     <v-progress-circular v-if="isLoadingMembers" indeterminate />
     <v-list v-else>
       <v-list-item v-for="member in members" :key="member.userId">
+        <template v-slot:prepend>
+          <v-list-item-action>
+            <v-btn
+              icon
+              size="small"
+              @click="deleteMember(member.userId).then(() => refetchMembers())"
+              :disabled="isDeletingMember"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </template>
         <v-list-item-title>{{ member.fullName }}</v-list-item-title>
         <v-list-item-subtitle>{{ member.username }}</v-list-item-subtitle>
       </v-list-item>
