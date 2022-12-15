@@ -160,4 +160,9 @@ public class UserService : IUserService
         return _userRepository.RetrieveMembersByUserId(userId)
             .Select(u => _mapper.Map<User>(u)).ToList();
     }
+
+    public async Task<bool> RemoveMemberAsync(int memberId, int adminId)
+    {
+        return await _userRepository.DeleteUserAsync(memberId, adminId);
+    }
 }
