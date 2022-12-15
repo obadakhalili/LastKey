@@ -46,19 +46,15 @@ public class UserRepository : IUserRepository
     public async Task<bool> DeleteUserAsync(int userId, int adminId)
     {
         var userToDelete = await _context.Users
-            .FirstAsync(u => u.UserId == userId && u.AdminId == adminId);
-
-        try
-        {
-            _context.Users.Remove(userToDelete);
-            
-            await _context.SaveChangesAsync();
-            
-            return true;
-        }
-        catch (Exception)
-        {
+            .FirstOrDefaultAsync(u => u.UserId == userId && u.AdminId == adminId);
+        
+        if (userToDelete == null)
             return false;
-        }
+        
+        _context.Users.Remove(userToDelete);
+
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }

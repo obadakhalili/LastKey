@@ -120,11 +120,14 @@ public class UsersController : ControllerBase
 
         var isDeleted = await _userService.RemoveMemberAsync(memberId, adminId);
 
-        return isDeleted
-            ? NoContent()
-            : NotFound(new
+        if (!isDeleted)
+        {
+            return NotFound(new
             {
                 message = "The specified user was not found!"
             });
+        }
+
+        return Ok();
     }
 }
