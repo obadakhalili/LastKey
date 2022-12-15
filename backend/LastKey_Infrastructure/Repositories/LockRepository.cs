@@ -46,8 +46,13 @@ public class LockRepository : ILockRepository
 
     public async Task<List<Lock>> RetrieveLocksForUserAsync(int userId)
     {
-        var user = await _context.Users.Include(u => u.Locks)
-            .FirstAsync(u => u.UserId == userId);
+        var user = await _context.Users.Include(u => u.Locks).FirstAsync(u => u.UserId == userId);
+
+        if (user.Locks.Count == 0)
+        {
+            var memberAdmin =  await _context.Users.Include(u => u.Locks).FirstAsync(u => u.UserId == user.AdminId);
+            return memberAdmin.Locks;
+        }
 
         return user.Locks;
     }
