@@ -13,4 +13,10 @@ public interface IUserService
     void ClearCookies();
 
     Task<bool> UsernameExistsAsync(string username);
+
+    Task<User> AddMemberToUserAsync(int userId, CreateUserRequest request);
+
+    List<User>? RetrieveMembersForUserAsync(int userId);
+
+    Task<bool> RemoveMemberAsync(int memberId, int adminId);
 }

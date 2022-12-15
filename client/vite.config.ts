@@ -16,7 +16,7 @@ export default defineConfig({
     port: 8080,
     proxy: {
       "/api": {
-        target: "http://lastkey.azurewebsites.net/",
+        target: "http://localhost:8081",
         changeOrigin: true,
       },
     },

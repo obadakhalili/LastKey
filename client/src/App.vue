@@ -7,7 +7,7 @@ import { useAuth } from "./utils/composables"
 const router = useRouter()
 const route = useRoute()
 const routeIsPrivate = computed(() => route.meta.private as boolean | undefined)
-const { user, setupUser } = useAuth()
+const { user, setupUser, logout } = useAuth()
 
 watch([user, routeIsPrivate], ([user, routeIsPrivate]) => {
   if (user === undefined || routeIsPrivate === undefined) {
@@ -54,14 +54,28 @@ onMounted(() => {
       <v-divider></v-divider>
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home" title="Home" to="/" />
-        <v-list-item
-          v-if="user.isAdmin"
-          prepend-icon="mdi-lock"
-          title="Locks Management"
-          to="/locks-management"
-        />
+        <template v-if="user.isAdmin">
+          <v-list-item
+            prepend-icon="mdi-lock"
+            title="My Locks"
+            to="/locks-management"
+          />
+          <v-list-item
+            prepend-icon="mdi-account-group"
+            title="Members"
+            to="/members-management"
+          />
+        </template>
       </v-list>
-      <!-- TODO: add logout -->
+      <template v-slot:append>
+        <v-list density="compact" nav>
+          <v-list-item
+            prepend-icon="mdi-logout"
+            title="Logout"
+            @click="() => logout()"
+          />
+        </v-list>
+      </template>
     </v-navigation-drawer>
     <v-main>
       <v-row

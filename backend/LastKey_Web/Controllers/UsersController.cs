@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LastKey_Web.Controllers;
 
+[Authorize]
 [Controller]
 [Route("api/users")]
 public class UsersController : ControllerBase
@@ -17,6 +18,7 @@ public class UsersController : ControllerBase
         _userService = userService;
     }
     
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser([FromForm] CreateUserRequest request)
     {
@@ -28,6 +30,24 @@ public class UsersController : ControllerBase
         }
         
         var createdUser = await _userService.CreateUserAsync(request);
+
+        return Ok(createdUser);
+    }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpPost("members")]
+    public async Task<ActionResult<User>> AddMembers([FromForm] CreateUserRequest request)
+    {
+        if (await _userService.UsernameExistsAsync(request.Username))
+        {
+            return BadRequest(new {
+                message = "Username already exists"
+            });
+        }
+        
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var createdUser = await _userService.AddMemberToUserAsync(userId, request);
 
         return Ok(createdUser);
     }
@@ -60,7 +80,6 @@ public class UsersController : ControllerBase
         return Ok(authenticationResponse.User);
     }
 
-    [Authorize]
     [HttpPost("logout")]
     public ActionResult LogoutUser()
     {
@@ -69,7 +88,6 @@ public class UsersController : ControllerBase
         return Ok();
     }
     
-    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<User>> GetUserInfo()
     {
@@ -81,5 +99,35 @@ public class UsersController : ControllerBase
             return NotFound();
 
         return Ok(userInfo);
+    }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpGet("members")]
+    public ActionResult<List<User>> GetMembersForUser()
+    {
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var members = _userService.RetrieveMembersForUserAsync(userId);
+
+        return Ok(members ?? new List<User>());
+    }
+
+    [Authorize(Roles = nameof(Roles.Admin))]
+    [HttpDelete("members/{memberId}")]
+    public async Task<ActionResult> DeleteMember(int memberId)
+    {
+        var adminId = JwtSecurityHelper.GetUserIdFromToken(Request);
+
+        var isDeleted = await _userService.RemoveMemberAsync(memberId, adminId);
+
+        if (!isDeleted)
+        {
+            return NotFound(new
+            {
+                message = "The specified user was not found!"
+            });
+        }
+
+        return Ok();
     }
 }

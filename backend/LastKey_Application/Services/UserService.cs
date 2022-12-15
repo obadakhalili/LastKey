@@ -135,4 +135,34 @@ public class UserService : IUserService
         cookiesToClear.Delete("jwtSignature");
         cookiesToClear.Delete("jwtPayload");
     }
+
+    public async Task<User> AddMemberToUserAsync(int userId, CreateUserRequest request)
+    {
+        var userModel = _mapper.Map<LastKey_Domain.Entities.User>(request);
+
+        var b64UserImage = await request.UserImage.ToBase64ImageAsync();
+
+        userModel = userModel with
+        {
+            IsAdmin = false,
+            UserImage = b64UserImage,
+            Password = GenerateEncryptedPassword(userModel.Password),
+            AdminId = userId
+        };
+
+        var createdUser = _mapper.Map<User>(await _userRepository.CreateUserAsync(userModel));
+
+        return createdUser;
+    }
+
+    public List<User> RetrieveMembersForUserAsync(int userId)
+    {
+        return _userRepository.RetrieveMembersByUserId(userId)
+            .Select(u => _mapper.Map<User>(u)).ToList();
+    }
+
+    public async Task<bool> RemoveMemberAsync(int memberId, int adminId)
+    {
+        return await _userRepository.DeleteUserAsync(memberId, adminId);
+    }
 }

@@ -23,4 +23,6 @@ public record User
     public bool IsAdmin { get; set; }
 
     public List<Lock> Locks { get; set; } = new();
+    
+    public int? AdminId { get; set; }
 }

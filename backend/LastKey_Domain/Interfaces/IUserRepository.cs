@@ -11,4 +11,8 @@ public interface IUserRepository
     Task<User?> GetUserInfoByIdAsync(int userId);
     
     Task<bool> UsernameExistsAsync(string username);
+
+    List<User> RetrieveMembersByUserId(int userId);
+
+    Task<bool> DeleteUserAsync(int userId, int adminId);
 }

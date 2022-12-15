@@ -37,4 +37,24 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.AnyAsync(u => u.UserName == username);
     }
+
+    public List<User> RetrieveMembersByUserId(int userId)
+    {
+        return _context.Users.Where(u => u.AdminId == userId).ToList();
+    }
+
+    public async Task<bool> DeleteUserAsync(int userId, int adminId)
+    {
+        var userToDelete = await _context.Users
+            .FirstOrDefaultAsync(u => u.UserId == userId && u.AdminId == adminId);
+        
+        if (userToDelete == null)
+            return false;
+        
+        _context.Users.Remove(userToDelete);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
