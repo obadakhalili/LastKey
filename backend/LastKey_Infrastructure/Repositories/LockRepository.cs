@@ -48,13 +48,12 @@ public class LockRepository : ILockRepository
     {
         var user = await _context.Users.Include(u => u.Locks).FirstAsync(u => u.UserId == userId);
 
-        if (user.Locks.Count == 0)
+        if (user.IsAdmin)
         {
-            var memberAdmin =  await _context.Users.Include(u => u.Locks).FirstAsync(u => u.UserId == user.AdminId);
-            return memberAdmin.Locks;
+            return user.Locks;
         }
 
-        return user.Locks;
+        return _context.Locks.Where(l => l.UserId == user.AdminId).ToList();
     }
     
     public async Task<bool> LockMacAddressExistsAsync(string macAddress)
