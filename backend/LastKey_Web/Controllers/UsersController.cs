@@ -113,7 +113,7 @@ public class UsersController : ControllerBase
     }
 
     [Authorize(Roles = nameof(Roles.Admin))]
-    [HttpDelete("user/members/{memberId}")]
+    [HttpDelete("members/{memberId}")]
     public async Task<ActionResult> DeleteMember(int memberId)
     {
         var adminId = JwtSecurityHelper.GetUserIdFromToken(Request);
