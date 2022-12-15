@@ -135,7 +135,7 @@ public class LockController : ControllerBase
         
         var updateRequest = new UpdateLockRequest
         {
-            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            UserId = user.IsAdmin ? userId : (int) user.AdminId,
             LockId = lockId,
             PropertyToUpdate = LockProperties.LockState,
             IsLocked = false
@@ -161,9 +161,12 @@ public class LockController : ControllerBase
     [HttpPatch("{lockId}/lock")]
     public async Task<ActionResult> LockLock(int lockId)
     {
+        var userId = JwtSecurityHelper.GetUserIdFromToken(Request);
+        var user = await _userService.RetrieveUserInfoByIdAsync(userId);
+
         var updateRequest = new UpdateLockRequest
         {
-            UserId = JwtSecurityHelper.GetUserIdFromToken(Request),
+            UserId = user.IsAdmin ? userId : (int) user.AdminId,
             LockId = lockId,
             PropertyToUpdate = LockProperties.LockState,
             IsLocked = true
