@@ -105,22 +105,19 @@ const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
       </v-btn>
     </v-card-actions>
   </v-card-text>
-  <v-dialog
-    :persistent="true"
-    v-model="isEditingALockDialogOpen"
-    max-width="290"
-  >
-    <v-form
-      @submit.prevent="
-        updateLockName(lockToEdit!).then(() => {
-          lockToEdit = null
-          newLockName = ''
-          refetchMyLocks()
-        })
-      "
-      validate-on="submit"
-    >
-      <v-card>
+  <v-dialog :persistent="true" v-model="isEditingALockDialogOpen" max-width="290">
+    <v-card>
+      <v-card-title> Update lock name </v-card-title>
+      <v-form
+        @submit.prevent="
+          updateLockName(lockToEdit!).then(() => {
+            lockToEdit = null
+            newLockName = ''
+            refetchMyLocks()
+          })
+        "
+        validate-on="submit"
+      >
         <v-card-text>
           <v-text-field
             label="New lock name"
@@ -136,8 +133,8 @@ const { mutateAsync: pairToALock, isLoading: isPairingToALock } = useMutation(
             Save
           </v-btn>
         </v-card-actions>
-      </v-card>
-    </v-form>
+      </v-form>
+    </v-card>
   </v-dialog>
   <v-dialog
     v-model="isPairingANewLockDialogOpen"
