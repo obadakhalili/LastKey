@@ -1,6 +1,7 @@
 #include <WiFiManager.h>
-#include <WiFi.h>
 #include <HTTPClient.h>
+
+const int relayPin = 27;
 
 String httpGetRequest(String url) {
   HTTPClient http;
@@ -29,6 +30,8 @@ WiFiManager wm;
 
 void setup() {
     Serial.begin(9600);
+
+    pinMode(relayPin, OUTPUT);
 
     bool res = wm.autoConnect("LockAP");
 
@@ -69,14 +72,20 @@ void loop() {
     url = "http://lastkey.azurewebsites.net/api/locks/state/" + APMac;
     String isLocked = httpGetRequest(url);
 
+    int state = digitalRead(relayPin);
+
     // this if statement will also check if the lock is already locked or not when I implement the actual relay
-    if (isLocked == "true") {
+    if (isLocked == "true" && state == HIGH) {
       Serial.println("Locking");
+      state = LOW;
+      digitalWrite(relayPin, state);
     }
     
-    // again, the same check would be here as above
-    if (isLocked == "false") {
+   // again, the same check would be here as above
+    if (isLocked == "false" && state == LOW) {
       Serial.println("Unlocking");
+      state = HIGH;
+      digitalWrite(relayPin, state);
     }
   }
 
