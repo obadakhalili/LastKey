@@ -83,6 +83,12 @@ function handleAddMemberFormSubmit() {
       .then(() => refetchMembers())
       .then(() => {
         isAddingANewMemberDialogOpen.value = false
+        newMemberInfo.value = {
+          fullName: "",
+          userImage: undefined,
+          username: "",
+          password: "",
+        }
       })
   }
 }
