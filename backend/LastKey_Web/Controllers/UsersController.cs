@@ -31,6 +31,8 @@ public class UsersController : ControllerBase
         
         var createdUser = await _userService.CreateUserAsync(request);
 
+        createdUser.UserImage = null;
+
         return Ok(createdUser);
     }
 
@@ -49,6 +51,8 @@ public class UsersController : ControllerBase
 
         var createdUser = await _userService.AddMemberToUserAsync(userId, request);
 
+        createdUser.UserImage = null;
+        
         return Ok(createdUser);
     }
     
@@ -77,6 +81,8 @@ public class UsersController : ControllerBase
             HttpOnly = false
         });
 
+        authenticationResponse.User!.UserImage = null;
+        
         return Ok(authenticationResponse.User);
     }
 
@@ -98,6 +104,8 @@ public class UsersController : ControllerBase
         if (userInfo == null)
             return NotFound();
 
+        userInfo.UserImage = null;
+
         return Ok(userInfo);
     }
 
@@ -109,7 +117,15 @@ public class UsersController : ControllerBase
 
         var members = _userService.RetrieveMembersForUserAsync(userId);
 
-        return Ok(members ?? new List<User>());
+        return Ok(members != null ? members.Select(member => new User
+        {
+            UserId = member.UserId,
+            Username = member.Username,
+            FullName = member.FullName,
+            IsAdmin = member.IsAdmin,
+            AdminId = member.AdminId,
+            UserImage = null
+        }) : new List<User>());
     }
 
     [Authorize(Roles = nameof(Roles.Admin))]
