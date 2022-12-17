@@ -8,7 +8,7 @@ namespace LastKey_Web.Controllers;
 
 [Authorize]
 [Controller]
-[Route("api/locks")]
+[Route("locks")]
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;

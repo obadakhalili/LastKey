@@ -8,7 +8,7 @@ namespace LastKey_Web.Controllers;
 
 [Authorize]
 [Controller]
-[Route("api/users")]
+[Route("users")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
