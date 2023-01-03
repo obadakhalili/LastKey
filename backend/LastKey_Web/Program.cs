@@ -15,7 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<LastKeyContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
+    options.UseSqlServer(Environment.GetEnvironmentVariable("lastkey_db", EnvironmentVariableTarget.Machine)!);
 });
 
 builder.Services.AddApplicationServices();
@@ -48,7 +48,8 @@ builder.Services.AddAuthentication(options =>
     {
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+            .GetBytes(Environment.GetEnvironmentVariable("lastkey_secret", EnvironmentVariableTarget.Machine)!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = false,
