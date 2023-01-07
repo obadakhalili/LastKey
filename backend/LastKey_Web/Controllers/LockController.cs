@@ -116,8 +116,8 @@ public class LockController : ControllerBase
 
         var freeFaceValues = new Dictionary<string, string>
         {
-            {"api_key", Environment.GetEnvironmentVariable("face_api_key")!},
-            {"api_secret", Environment.GetEnvironmentVariable("face_api_secret")!},
+            {"api_key", Environment.GetEnvironmentVariable("face_api_key", EnvironmentVariableTarget.Machine)!},
+            {"api_secret", Environment.GetEnvironmentVariable("face_api_secret", EnvironmentVariableTarget.Machine)!},
             {"image_base64_1", user!.UserImage},
             {"image_base64_2", request.Image}
         };
