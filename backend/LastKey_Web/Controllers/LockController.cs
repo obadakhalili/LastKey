@@ -8,7 +8,7 @@ namespace LastKey_Web.Controllers;
 
 [Authorize]
 [Controller]
-[Route("api/locks")]
+[Route("locks")]
 public class LockController : ControllerBase
 {
     private readonly ILockService _lockService;
@@ -116,8 +116,8 @@ public class LockController : ControllerBase
 
         var freeFaceValues = new Dictionary<string, string>
         {
-            {"api_key", "QUvSxAb7PoiIBXLBo58oLrkwwWbRFOfv"},
-            {"api_secret", "0-sOo5yhXbGPTBdyguJQwZXN7XanzP7B"},
+            {"api_key", Environment.GetEnvironmentVariable("face_api_key")!},
+            {"api_secret", Environment.GetEnvironmentVariable("face_api_secret")!},
             {"image_base64_1", user!.UserImage},
             {"image_base64_2", request.Image}
         };

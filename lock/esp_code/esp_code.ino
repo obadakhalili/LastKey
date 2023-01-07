@@ -41,7 +41,7 @@ void setup() {
       // TODO: should be lowered at the backend side
       APMac.toLowerCase();
 
-      String url = "http://lastkey.azurewebsites.net/api/locks/" + APMac;
+      String url = "https://lastkey.azurewebsites.net/api/locks/" + APMac;
       String lockRegistered = httpGetRequest(url);
       
       if (lockRegistered == "false") {
@@ -60,7 +60,7 @@ void loop() {
   // TODO: should be lowered at the backend side
   APMac.toLowerCase();
 
-  String url = "http://lastkey.azurewebsites.net/api/locks/" + APMac;
+  String url = "https://lastkey.azurewebsites.net/api/locks/" + APMac;
   
   String lockRegistered = httpGetRequest(url);
 
@@ -69,7 +69,7 @@ void loop() {
     wm.resetSettings();	
     setup();
   } else {
-    url = "http://lastkey.azurewebsites.net/api/locks/state/" + APMac;
+    url = "https://lastkey.azurewebsites.net/api/locks/state/" + APMac;
     String isLocked = httpGetRequest(url);
 
     int state = digitalRead(relayPin);
